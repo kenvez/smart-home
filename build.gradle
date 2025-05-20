@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
+
 }
 
 group = 'com.smarthome'
@@ -13,6 +15,25 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
+
+application {
+    mainClass = 'com.smarthome.core.Main'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 
 test {
     useJUnitPlatform()
