@@ -4,16 +4,17 @@ import com.smarthome.cli.utils.ScreenUtils;
 import com.smarthome.core.model.house.House;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Scanner;
 
 public class HouseManager {
     private final Scanner scanner;
-    private final List<House> houses;
+    private final TreeSet<House> houses;
 
     public HouseManager(Scanner scanner) {
         this.scanner = scanner;
-        this.houses = new ArrayList<>();
+        this.houses = new TreeSet<>((houseOne, houseTwo) -> houseOne.getName().compareToIgnoreCase(houseTwo.getName()));
     }
 
     public void manage() {
@@ -64,8 +65,15 @@ public class HouseManager {
     private void addHouse() {
         ScreenUtils.clearScreen();
 
+        System.out.println("\n===========> Add house <============\n");
+
         System.out.print("Enter house name: ");
         String name = scanner.next();
+
+        if (houses.stream().anyMatch(h -> h.getName().equalsIgnoreCase(name))) {
+            System.out.println("A house with this name already exists!");
+            return;
+        }
 
         System.out.print("Enter house latitude: ");
         double latitude = scanner.nextDouble();
@@ -81,6 +89,10 @@ public class HouseManager {
     }
 
     private void removeHouse() {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n==========> Remove house <==========\n");
+
         if (houses.isEmpty()) {
             System.out.println("No houses found!");
             return;
@@ -88,12 +100,15 @@ public class HouseManager {
 
         listHouses();
 
-        System.out.print("Enter the number of the house to remove: ");
+        System.out.print("\nEnter the number of the house to remove: ");
 
         int index = scanner.nextInt() - 1;
 
-        if (index >= 0 && index < houses.size()) {
-            houses.remove(index);
+        List<House> housesList = new ArrayList<>(houses);
+
+
+        if (index >= 0 && index < housesList.size()) {
+            houses.remove(housesList.get(index));
             System.out.println("House removed successfully!");
         } else {
             System.out.println("Invalid house number!");
@@ -101,23 +116,28 @@ public class HouseManager {
     }
 
     private void listHouses() {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n==========> List houses <===========\n");
+
         if (houses.isEmpty()) {
-            System.out.println("\nNo houses found!");
+            System.out.println("No houses found!");
             return;
         }
 
-        System.out.println("\nList of houses:");
+        int index = 1;
 
-        for (int i = 0; i < houses.size(); i++) {
-            House house = houses.get(i);
-
+        for (House house : houses) {
             System.out.printf("%d. %s (%.6f, %.6f)%n",
-                    i + 1,
+                    index++,
                     house.getName(),
                     house.getLatitude(),
                     house.getLongitude()
             );
-
         }
+    }
+
+    public TreeSet<House> getHouses() {
+        return houses;
     }
 }

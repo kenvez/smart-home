@@ -15,4 +15,16 @@ public class Room {
         this.type = type;
         this.devices = new ArrayList<>();
     }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RoomType getType() {
+        return this.type;
+    }
 }

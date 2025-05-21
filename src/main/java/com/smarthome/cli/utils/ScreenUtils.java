@@ -19,7 +19,6 @@ public class ScreenUtils {
     }
 
     public static void pressEnterToContinue(Scanner scanner) {
-        scanner.nextLine();
         System.out.print("\nPress Enter to continue...");
         scanner.nextLine();
     }
