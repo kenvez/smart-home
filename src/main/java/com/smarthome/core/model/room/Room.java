@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 public class Room {
     private String name;
-    private RoomType type;
-    private List<SmartDevice> devices;
+    private final RoomType type;
+    private final List<SmartDevice> devices;
 
     public Room(String name, RoomType type) {
         this.name = name;

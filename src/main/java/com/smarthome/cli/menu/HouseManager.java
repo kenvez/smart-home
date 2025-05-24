@@ -4,17 +4,19 @@ import com.smarthome.cli.utils.ScreenUtils;
 import com.smarthome.core.model.house.House;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.List;
 import java.util.Scanner;
 
 public class HouseManager {
     private final Scanner scanner;
-    private final TreeSet<House> houses;
+    private final Set<House> houses;
 
     public HouseManager(Scanner scanner) {
         this.scanner = scanner;
-        this.houses = new TreeSet<>((houseOne, houseTwo) -> houseOne.getName().compareToIgnoreCase(houseTwo.getName()));
+        this.houses = new TreeSet<>((houseOne, houseTwo) -> houseOne.getName()
+                .compareToIgnoreCase(houseTwo.getName()));
     }
 
     public void manage() {
@@ -137,7 +139,7 @@ public class HouseManager {
         }
     }
 
-    public TreeSet<House> getHouses() {
+    public Set<House> getHouses() {
         return houses;
     }
 }

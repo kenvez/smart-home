@@ -5,34 +5,22 @@ import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
 import com.smarthome.core.model.room.RoomType;
 
-import java.util.Scanner;
-import java.util.TreeSet;
-import java.util.ArrayList;
+import java.util.*;
 
 public class RoomManager {
     private final Scanner scanner;
     private final HouseManager houseManager;
+    private final Set<Room> rooms;
     private House selectedHouse;
-    private TreeSet<Room> rooms;
 
     public RoomManager(Scanner scanner, HouseManager houseManager) {
         this.scanner = scanner;
         this.houseManager = houseManager;
-        this.rooms = new TreeSet<>((roomOne, roomTwo) -> roomOne.getName().compareToIgnoreCase(roomTwo.getName()));
+        this.rooms = new TreeSet<>((roomOne, roomTwo) -> roomOne.getName()
+                .compareToIgnoreCase(roomTwo.getName()));
     }
 
     public void manage() {
-        if (houseManager.getHouses().isEmpty()) {
-            System.out.println("\nNo houses available. Please add a house first.");
-            ScreenUtils.pressEnterToContinue(scanner);
-            return;
-        }
-
-        if (!selectHouse()) {
-            return;
-        }
-
-
         char choice = ' ';
 
         while (choice != 'b') {
@@ -80,53 +68,58 @@ public class RoomManager {
 
     private boolean selectHouse() {
         ScreenUtils.clearScreen();
-        System.out.println("\n=========> Select house <=========\n");
 
+        System.out.println("\n==========> Select house <==========\n");
+
+        Set<House> houses = houseManager.getHouses();
+
+        if (houses.isEmpty()) {
+            System.out.println("Error: No houses found! Please add a house first.");
+            return true;
+        }
+
+        List<House> housesList = new ArrayList<>(houses);
         int index = 1;
-        var housesList = new ArrayList<>(houseManager.getHouses());
 
         for (House house : housesList) {
-            System.out.printf("[%d] %s%n", index++, house.getName());
+            System.out.printf("[%d] %s (%.6f, %.6f)%n",
+                    index++,
+                    house.getName(),
+                    house.getLatitude(),
+                    house.getLongitude()
+            );
         }
 
-        System.out.println("[b] Back to main menu\n");
-        System.out.print("Select house number: ");
-
-        String input = scanner.nextLine().trim();
-
-        if (input.equalsIgnoreCase("b")) {
-            return false;
-        }
+        System.out.print("\nEnter your choice: ");
 
         try {
-            int houseIndex = Integer.parseInt(input) - 1;
-            if (houseIndex >= 0 && houseIndex < housesList.size()) {
-                selectedHouse = housesList.get(houseIndex);
-                rooms = new TreeSet<>((r1, r2) -> r1.getName().compareToIgnoreCase(r2.getName()));
-                rooms.addAll(selectedHouse.getRooms());
-                return true;
-            } else {
-                System.out.println("\nInvalid house number!");
-                ScreenUtils.pressEnterToContinue(scanner);
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice > 0 && choice <= housesList.size()) {
+                selectedHouse = housesList.get(choice - 1);
+                System.out.println("Selected house: " + selectedHouse.getName());
                 return false;
+            } else {
+                System.out.println("Invalid house number!");
+                return true;
             }
         } catch (NumberFormatException e) {
-            System.out.println("\nInvalid input! Please enter a number.");
-            ScreenUtils.pressEnterToContinue(scanner);
-            return false;
+            System.out.println("Please enter a valid number.");
+            return true;
         }
     }
 
-
     private void addRoom() {
+        if (selectHouse()) { return; }
+
         ScreenUtils.clearScreen();
 
         System.out.println("\n============> Add room <============\n");
 
         System.out.print("Enter room name: ");
-        String name = scanner.next();
+        String name = scanner.nextLine();
 
-        if (rooms.stream().anyMatch(r -> r.getName().equalsIgnoreCase(name))) {
+        if (rooms.stream().anyMatch(room -> room.getName().equalsIgnoreCase(name))) {
             System.out.println("A room with this name already exists!");
             return;
         }
@@ -135,71 +128,105 @@ public class RoomManager {
 
         System.out.println("\n============> Add room <============\n");
 
-        System.out.println("[1] Bedroom                             ");
-        System.out.println("[2] Kitchen                             ");
-        System.out.println("[3] Garage                              ");
-        System.out.println("[4] Living room                         ");
-        System.out.println("[5] Dining room                         ");
-        System.out.println("[6] Bathroom                            ");
+        RoomType[] types = RoomType.values();
 
-        System.out.print("\nChoose room type: ");
-
-        int typeIndex = scanner.nextInt();
-        RoomType type;
-
-        switch (typeIndex) {
-            case 1 -> type = RoomType.BEDROOM;
-            case 2 -> type = RoomType.KITCHEN;
-            case 3 -> type = RoomType.GARAGE;
-            case 4 -> type = RoomType.LIVING_ROOM;
-            case 5 -> type = RoomType.DINING_ROOM;
-            case 6 -> type = RoomType.BATHROOM;
-
-            default -> {
-                System.out.println("Invalid room type! Please try again.");
-                ScreenUtils.pressEnterToContinue(scanner);
-                return;
-            }
-
+        for (int i = 0; i < types.length; i++) {
+            System.out.printf("[%d] %s%n", i + 1, types[i]);
         }
 
-        Room room = new Room(name, type);
+        System.out.print("\nEnter your choice: ");
 
-        rooms.add(room);
-        selectedHouse.addRoom(room);
+        try {
+            int typeChoice = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("\nRoom added successfully!");
+            if (typeChoice > 0 && typeChoice <= types.length) {
+                RoomType selectedType = types[typeChoice - 1];
+                Room room = new Room(name, selectedType);
+
+                rooms.add(room);
+                selectedHouse.addRoom(room);
+
+                System.out.println("\nRoom '" + name + "' added successfully!");
+            } else {
+                System.out.println("Invalid room type selection.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+        }
     }
 
     private void removeRoom() {
+        if (selectHouse()) { return; }
+
         ScreenUtils.clearScreen();
 
-        System.out.println("\n==========> Remove room <===========\n");
+        System.out.println("\n==========> Remove Room <===========\n");
 
         if (rooms.isEmpty()) {
-            System.out.println("No rooms found!");
+            System.out.println("No rooms found in the selected house!");
             return;
         }
+
+        listRoomsForHouse();
+
+        System.out.print("\nEnter your choice: ");
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            List<Room> roomsList = new ArrayList<>(rooms.stream()
+                    .filter(room -> selectedHouse.getRooms().contains(room))
+                    .toList());
+
+            if (choice > 0 && choice <= roomsList.size()) {
+                Room roomToRemove = roomsList.get(choice - 1);
+
+                rooms.remove(roomToRemove);
+                selectedHouse.removeRoom(roomToRemove);
+
+                System.out.println("\nRoom '" + roomToRemove.getName() + "' removed successfully!");
+            } else {
+                System.out.println("Invalid room number!");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid number.");
+        }
+
     }
 
     private void listRooms() {
+        if (selectHouse()) { return; }
+
         ScreenUtils.clearScreen();
 
-        System.out.println("\n===========> List rooms <===========\n");
+        System.out.println("\n==========> List Rooms <===========\n");
 
-        if (rooms.isEmpty()) {
-            System.out.println("No rooms found!");
+        listRoomsForHouse();
+    }
+
+    private void listRoomsForHouse() {
+        Set<Room> houseRooms = selectedHouse.getRooms();
+
+        if (houseRooms.isEmpty()) {
+            System.out.println("No rooms found in the selected house!");
             return;
         }
 
+        System.out.println("Rooms in " + selectedHouse.getName() + ":\n");
+
+        List<Room> roomsList = new ArrayList<>(houseRooms);
         int index = 1;
 
-        for (Room room : rooms) {
-            System.out.printf("%d. %s (%s)",
+        for (Room room : roomsList) {
+            System.out.printf("%d. %s (Type: %s)%n",
                     index++,
                     room.getName(),
                     room.getType()
             );
         }
+    }
+
+    private Set<Room> getRooms() {
+        return rooms;
     }
 }

@@ -4,7 +4,7 @@ import com.smarthome.core.model.devices.base.DeviceStatus;
 import com.smarthome.core.model.devices.base.SmartDevice;
 
 public class Outlet extends SmartDevice {
-    private boolean inUse;
+    private final boolean inUse;
 
     public Outlet(String name, DeviceStatus status) {
         super(name, status);

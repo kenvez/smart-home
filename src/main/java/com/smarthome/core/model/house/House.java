@@ -4,18 +4,20 @@ import com.smarthome.core.model.room.Room;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class House {
     private String name;
     private double latitude;
     private double longitude;
-    private final List<Room> rooms;
+    private final Set<Room> rooms;
 
     public House(String name, double latitude, double longitude) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.rooms = new ArrayList<>();
+        this.rooms = new TreeSet<>((roomOne, roomTwo) -> roomOne.getName().compareToIgnoreCase(roomTwo.getName()));
     }
 
     public String getName() {
@@ -42,7 +44,7 @@ public class House {
         this.longitude = longitude;
     }
 
-    public List<Room> getRooms() {
+    public Set<Room> getRooms() {
         return this.rooms;
     }
 
