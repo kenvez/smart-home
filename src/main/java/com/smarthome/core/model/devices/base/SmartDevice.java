@@ -1,11 +1,20 @@
 package com.smarthome.core.model.devices.base;
 
+import com.smarthome.core.logging.EventLogger;
+import com.smarthome.core.logging.EventType;
+import com.smarthome.core.model.room.Room;
+import com.smarthome.core.model.rules.Rule;
+
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 public abstract class SmartDevice implements Switchable {
     private final String id;
+    private final Set<Rule> rules;
     private String name;
     private DeviceStatus status;
+    private Room parentRoom;
 
     public abstract void simulate();
 
@@ -13,6 +22,7 @@ public abstract class SmartDevice implements Switchable {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.status = status;
+        this.rules = new TreeSet<>((ruleOne, ruleTwo) -> ruleOne.getName().compareToIgnoreCase(ruleTwo.getName()));
     }
 
     public String getId() {
@@ -28,7 +38,11 @@ public abstract class SmartDevice implements Switchable {
             throw new IllegalArgumentException("Device name cannot be null or empty");
         }
 
+        String oldName = this.name;
         this.name = name;
+
+        EventLogger.getInstance().logDeviceEvent(this, parentRoom, EventType.STATUS_CHANGE, "Device name changed from '" + oldName + "' to '" + name + "'"
+        );
     }
 
     public DeviceStatus getStatus() {
@@ -41,7 +55,20 @@ public abstract class SmartDevice implements Switchable {
         if (status != DeviceStatus.ON && status != DeviceStatus.OFF)
             throw new IllegalArgumentException("Unsupported device status: " + status);
 
+        DeviceStatus oldStatus = this.status;
         this.status = status;
+
+        if (oldStatus != status) {
+            String description = "Device status changed from " + oldStatus + " to " + status;
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    parentRoom,
+                    EventType.STATUS_CHANGE,
+                    description
+            );
+        }
+
     }
 
     @Override
@@ -57,5 +84,17 @@ public abstract class SmartDevice implements Switchable {
     @Override
     public boolean isOn() {
         return this.status == DeviceStatus.ON;
+    }
+
+    public void setParentRoom(Room room) {
+        this.parentRoom = room;
+    }
+
+    public Room getParentRoom() {
+        return parentRoom;
+    }
+
+    public Set<Rule> getRules() {
+        return rules;
     }
 }

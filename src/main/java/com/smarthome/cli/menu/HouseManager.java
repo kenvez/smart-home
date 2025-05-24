@@ -100,20 +100,39 @@ public class HouseManager {
             return;
         }
 
-        listHouses();
-
-        System.out.print("\nEnter the number of the house to remove: ");
-
-        int index = scanner.nextInt() - 1;
-
+        int index = 1;
         List<House> housesList = new ArrayList<>(houses);
 
+        for (House house : housesList) {
+            System.out.printf("[%d] %s (%.6f, %.6f)%n",
+                    index++,
+                    house.getName(),
+                    house.getLatitude(),
+                    house.getLongitude()
+            );
+        }
 
-        if (index >= 0 && index < housesList.size()) {
-            houses.remove(housesList.get(index));
-            System.out.println("House removed successfully!");
-        } else {
-            System.out.println("Invalid house number!");
+        System.out.print("[b] Back to main menu                 \n");
+
+        System.out.print("\nEnter your choice: ");
+
+        String choice = scanner.next();
+
+        if (choice.equalsIgnoreCase("b")) {
+            return;
+        }
+
+        try {
+            int choiceIndex = Integer.parseInt(choice);
+
+            if (choiceIndex > 0 && choiceIndex <= housesList.size()) {
+                houses.remove(housesList.get(choiceIndex - 1));
+                System.out.println("House removed successfully!");
+            } else {
+                System.out.println("Invalid house number!");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid number.");
         }
     }
 
@@ -124,13 +143,14 @@ public class HouseManager {
 
         if (houses.isEmpty()) {
             System.out.println("No houses found!");
+
             return;
         }
 
         int index = 1;
 
         for (House house : houses) {
-            System.out.printf("%d. %s (%.6f, %.6f)%n",
+            System.out.printf("[%d] %s (%.6f, %.6f)%n",
                     index++,
                     house.getName(),
                     house.getLatitude(),

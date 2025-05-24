@@ -1,5 +1,6 @@
 package com.smarthome.cli;
 
+import com.smarthome.cli.menu.DeviceManager;
 import com.smarthome.cli.utils.ScreenUtils;
 import com.smarthome.cli.menu.HouseManager;
 import com.smarthome.cli.menu.RoomManager;
@@ -10,11 +11,13 @@ public class CLI {
     private final Scanner scanner;
     private final HouseManager houseManager;
     private final RoomManager roomManager;
+    private final DeviceManager deviceManager;
 
     public CLI() {
         this.scanner = new Scanner(System.in);
         this.houseManager = new HouseManager(scanner);
         this.roomManager = new RoomManager(scanner, houseManager);
+        this.deviceManager = new DeviceManager(scanner, houseManager, roomManager);
     }
 
     public void start() {
@@ -26,13 +29,16 @@ public class CLI {
 
             choice = scanner.next().charAt(0);
 
+            scanner.nextLine();
+
             switch (choice) {
                 case '1' -> houseManager.manage();
                 case '2' -> roomManager.manage();
-                case '3' -> System.out.println("Manage devices not yet implemented!");
+                case '3' -> deviceManager.manage();
                 case '4' -> System.out.println("Manage rules not yet implemented!");
                 case '5' -> System.out.println("Display system status not yet implemented!");
                 case '6' -> System.out.println("Simulate devices not yet implemented!");
+                case 'q' -> System.out.println("Quiting program!");
 
                 default -> System.out.println("Invalid choice! Please try again.");
             }
