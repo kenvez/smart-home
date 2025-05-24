@@ -9,21 +9,16 @@ import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 
 public class DeviceManager {
     private final Scanner scanner;
     private final HouseManager houseManager;
-    private final RoomManager roomManager;
     private Room selectedRoom;
 
-    public DeviceManager(Scanner scanner, HouseManager houseManager, RoomManager roomManager) {
+    public DeviceManager(Scanner scanner, HouseManager houseManager) {
         this.scanner = scanner;
         this.houseManager = houseManager;
-        this.roomManager = roomManager;
     }
 
     public void manage() {
@@ -80,11 +75,10 @@ public class DeviceManager {
 
         if (selectedHouse == null) return;
 
-        Room selectedRoom = ScreenUtils.selectRoom(scanner, roomManager, houseManager);
+        Room selectedRoom = ScreenUtils.selectRoom(scanner, selectedHouse);
 
         if (selectedRoom == null) return;
 
-        this.selectedRoom = selectedRoom;
 
         ScreenUtils.clearScreen();
 
@@ -199,11 +193,9 @@ public class DeviceManager {
 
         if (selectedHouse == null) return;
 
-        Room selectedRoom = ScreenUtils.selectRoom(scanner, roomManager, houseManager);
+        Room selectedRoom = ScreenUtils.selectRoom(scanner, selectedHouse);
 
         if (selectedRoom == null) return;
-
-        this.selectedRoom = selectedRoom;
 
         ScreenUtils.clearScreen();
 
@@ -254,15 +246,17 @@ public class DeviceManager {
     }
 
     private void listDevices() {
-        House house  = ScreenUtils.selectHouse(scanner, houseManager);
+        House selectedHouse  = ScreenUtils.selectHouse(scanner, houseManager);
 
-        if (house == null) return;
+        if (selectedHouse == null) {
+            return;
+        }
 
-        Room room = ScreenUtils.selectRoom(scanner, roomManager, houseManager);
+        Room selectedRoom = ScreenUtils.selectRoom(scanner, selectedHouse);
 
-        if (room == null) return;
-
-        this.selectedRoom = room;
+        if (selectedRoom == null) {
+            return;
+        }
 
         ScreenUtils.clearScreen();
 
@@ -290,6 +284,14 @@ public class DeviceManager {
     }
 
     public Set<SmartDevice> getDevices() {
-        return selectedRoom.getDevices();
+        Set<SmartDevice> allDevices = new HashSet<>();
+
+        for (House house : houseManager.getHouses()) {
+            for (Room room : house.getRooms()) {
+                allDevices.addAll(room.getDevices());
+            }
+        }
+
+        return allDevices;
     }
 }

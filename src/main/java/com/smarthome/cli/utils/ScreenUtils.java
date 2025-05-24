@@ -85,12 +85,12 @@ public class ScreenUtils {
         }
     }
 
-    public static Room selectRoom(Scanner scanner, RoomManager roomManager, HouseManager houseManager) {
+    public static Room selectRoom(Scanner scanner, House house) {
         ScreenUtils.clearScreen();
 
         System.out.println("\n==========> Select room <===========\n");
 
-        Set<Room> rooms = roomManager.getRooms();
+        Set<Room> rooms = house.getRooms();
 
         if (rooms.isEmpty()) {
             System.out.println("No rooms found! Please add a room first.");
@@ -138,15 +138,15 @@ public class ScreenUtils {
         }
     }
 
-    public static SmartDevice selectDevice(Scanner scanner, HouseManager houseManager, RoomManager roomManager, DeviceManager deviceManager) {
+    public static SmartDevice selectDevice(Scanner scanner, Room room) {
         ScreenUtils.clearScreen();
 
-        System.out.println("\n=========> Select device <==========\n");
+        System.out.println("\n==========> Select room <===========\n");
 
-        Set<SmartDevice> devices = deviceManager.getDevices();
+        Set<SmartDevice> devices = room.getDevices();
 
         if (devices.isEmpty()) {
-            System.out.println("No devices found! Please add a device first.");
+            System.out.println("No rooms found! Please add a room first.");
 
             ScreenUtils.pressEnterToContinue(scanner);
 
@@ -189,7 +189,5 @@ public class ScreenUtils {
 
             return null;
         }
-
-
     }
 }

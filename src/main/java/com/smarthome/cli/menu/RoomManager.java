@@ -64,11 +64,11 @@ public class RoomManager {
     }
 
     private void addRoom() {
-        House house = ScreenUtils.selectHouse(scanner, houseManager);
+        House selectedHouse = ScreenUtils.selectHouse(scanner, houseManager);
 
-        if (house == null) return;
-
-        this.selectedHouse = house;
+        if (selectedHouse == null) {
+            return;
+        }
 
         ScreenUtils.clearScreen();
 
@@ -113,11 +113,9 @@ public class RoomManager {
     }
 
     private void removeRoom() {
-        House house = ScreenUtils.selectHouse(scanner, houseManager);
+        House selectedHouse = ScreenUtils.selectHouse(scanner, houseManager);
 
-        if (house == null) return;
-
-        this.selectedHouse = house;
+        if (selectedHouse == null) return;
 
         ScreenUtils.clearScreen();
 
@@ -169,11 +167,9 @@ public class RoomManager {
     }
 
     private void listRooms() {
-        House house = ScreenUtils.selectHouse(scanner, houseManager);
+        House selectedHouse = ScreenUtils.selectHouse(scanner, houseManager);
 
-        if (house == null) return;
-
-        this.selectedHouse = house;
+        if (selectedHouse == null) return;
 
         ScreenUtils.clearScreen();
 
@@ -200,7 +196,7 @@ public class RoomManager {
         }
     }
 
-    public Set<Room> getRooms() {
-        return selectedHouse.getRooms();
+    public Set<Room> getRooms(House house) {
+        return house.getRooms();
     }
 }

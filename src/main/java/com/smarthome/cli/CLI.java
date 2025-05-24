@@ -1,9 +1,7 @@
 package com.smarthome.cli;
 
-import com.smarthome.cli.menu.DeviceManager;
+import com.smarthome.cli.menu.*;
 import com.smarthome.cli.utils.ScreenUtils;
-import com.smarthome.cli.menu.HouseManager;
-import com.smarthome.cli.menu.RoomManager;
 
 import java.util.Scanner;
 
@@ -12,12 +10,19 @@ public class CLI {
     private final HouseManager houseManager;
     private final RoomManager roomManager;
     private final DeviceManager deviceManager;
+    private final RuleManager ruleManager;
+    private final SystemStatusManager systemStatusManager;
+
 
     public CLI() {
         this.scanner = new Scanner(System.in);
         this.houseManager = new HouseManager(scanner);
         this.roomManager = new RoomManager(scanner, houseManager);
-        this.deviceManager = new DeviceManager(scanner, houseManager, roomManager);
+        this.deviceManager = new DeviceManager(scanner, houseManager);
+        this.ruleManager = new RuleManager(scanner, houseManager, deviceManager);
+        this.systemStatusManager = new SystemStatusManager(scanner, houseManager, roomManager,
+                deviceManager, ruleManager);
+
     }
 
     public void start() {
@@ -35,8 +40,8 @@ public class CLI {
                 case '1' -> houseManager.manage();
                 case '2' -> roomManager.manage();
                 case '3' -> deviceManager.manage();
-                case '4' -> System.out.println("Manage rules not yet implemented!");
-                case '5' -> System.out.println("Display system status not yet implemented!");
+                case '4' -> ruleManager.manage();
+                case '5' -> systemStatusManager.manage();
                 case '6' -> System.out.println("Simulate devices not yet implemented!");
                 case 'q' -> System.out.println("Quiting program!");
 
