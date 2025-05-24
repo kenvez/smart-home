@@ -1,6 +1,7 @@
 package com.smarthome.cli.utils;
 
 import com.smarthome.core.Main;
+import com.smarthome.core.model.devices.base.SmartDevice;
 import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
 
@@ -46,6 +47,7 @@ public class MenuUtils {
 
         if (rooms.isEmpty()) {
             System.out.println("No rooms found in the selected house!");
+
             return roomsList;
         }
 
@@ -61,12 +63,36 @@ public class MenuUtils {
         return roomsList;
     }
 
+    public static List<SmartDevice> displayDevicesList(Set<SmartDevice> devices) {
+        List<SmartDevice> devicesList = new ArrayList<>(devices);
+
+        if (devices.isEmpty()) {
+            System.out.println("No devices found in the selected house!");
+
+            return devicesList;
+        }
+
+        int index = 1;
+
+        for (SmartDevice device : devicesList) {
+            System.out.printf("[%d] %s [Status: %s]%n",
+                    index++,
+                    device.getName(),
+                    device.getStatus()
+            );
+        }
+
+        return devicesList;
+    }
+
 
 
     public static House selectHouse(Scanner scanner) {
-        List<House> housesList = new ArrayList<>(Main.houses);
+        List<House> houses = new ArrayList<>(Main.houses);
 
-        System.out.println("\n==========> Select House <==========\n");
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n==========> Select house <==========\n");
 
         // TODO implement exception
 
@@ -78,7 +104,7 @@ public class MenuUtils {
 
         int index = 1;
 
-        for (House house : housesList) {
+        for (House house : houses) {
             System.out.printf("[%d] %s [%.6f, %.6f]%n",
                     index++,
                     house.getName(),
@@ -92,8 +118,8 @@ public class MenuUtils {
         try {
             int choice = Integer.parseInt(scanner.nextLine());
 
-            if (choice > 0 && choice <= housesList.size()) {
-                House selectedHouse = housesList.get(choice - 1);
+            if (choice > 0 && choice <= houses.size()) {
+                House selectedHouse = houses.get(choice - 1);
 
                 System.out.println("Selected house: " + selectedHouse.getName());
 
@@ -101,14 +127,56 @@ public class MenuUtils {
             } else {
                 System.out.println("\nInvalid house number!");
 
-                ScreenUtils.pressEnterToContinue(scanner);
-
                 return null;
             }
         } catch (NumberFormatException e) {
             System.out.println("\nPlease enter a valid number.");
 
-            ScreenUtils.pressEnterToContinue(scanner);
+            return null;
+        }
+    }
+
+    public static Room selectRoom(Scanner scanner, House selectedHouse) {
+        List<Room> rooms = new ArrayList<>(selectedHouse.getRooms());
+
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n==========> Select room <===========\n");
+
+        if (rooms.isEmpty()) {
+            System.out.println("No rooms found! Please add a room first.");
+
+            return null;
+        }
+
+        int index = 1;
+
+        for (Room room : rooms) {
+            System.out.printf("[%d] %s (Type: %s)%n",
+                    index++,
+                    room.getName(),
+                    room.getType()
+            );
+        }
+
+        System.out.print("\nEnter your choice: ");
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice > 0 && choice <= rooms.size()) {
+                Room selectedRoom = rooms.get(choice - 1);
+
+                System.out.println("Selected room: " + selectedRoom.getName());
+
+                return selectedRoom;
+            } else {
+                System.out.println("\nInvalid room number!");
+
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("\nPlease enter a valid number.");
 
             return null;
         }

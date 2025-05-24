@@ -38,11 +38,11 @@ public class HouseMenu {
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
                 case 'b' -> {
-                    System.out.println("Going back to main menu.\n");
+                    System.out.println("\nGoing back to main menu.");
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
                 default -> {
-                    System.out.println("Invalid choice! Please try again.");
+                    System.out.println("\nInvalid choice! Please try again.");
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
             }
