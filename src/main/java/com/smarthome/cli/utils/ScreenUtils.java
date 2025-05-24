@@ -33,58 +33,6 @@ public class ScreenUtils {
         scanner.nextLine();
     }
 
-    public static House selectHouse(Scanner scanner, HouseManager houseManager) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n==========> Select house <==========\n");
-
-        Set<House> houses = houseManager.getHouses();
-
-        if (houses.isEmpty()) {
-            System.out.println("No houses found! Please add a house first.");
-
-            return null;
-        }
-
-        List<House> housesList = new ArrayList<>(houses);
-        int index = 1;
-
-        for (House house : housesList) {
-            System.out.printf("[%d] %s (%.6f, %.6f)%n",
-                    index++,
-                    house.getName(),
-                    house.getLatitude(),
-                    house.getLongitude()
-            );
-        }
-
-        System.out.print("\nEnter your choice: ");
-
-        try {
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            if (choice > 0 && choice <= housesList.size()) {
-                House selectedHouse = housesList.get(choice - 1);
-
-                System.out.println("Selected house: " + selectedHouse.getName());
-
-                return selectedHouse;
-            } else {
-                System.out.println("\nInvalid house number!");
-
-                ScreenUtils.pressEnterToContinue(scanner);
-
-                return null;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("\nPlease enter a valid number.");
-
-            ScreenUtils.pressEnterToContinue(scanner);
-
-            return null;
-        }
-    }
-
     public static Room selectRoom(Scanner scanner, House house) {
         ScreenUtils.clearScreen();
 
