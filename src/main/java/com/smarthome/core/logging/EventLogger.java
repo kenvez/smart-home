@@ -19,6 +19,7 @@ public class EventLogger {
     private static final String LOG_FILE_PREFIX = "smart_home_events_";
     private static final String LOG_FILE_EXTENSION = ".tsv";
     private static final String LOGS_DIRECTORY = "logs";
+
     private static EventLogger instance;
     private final List<LogEvent> eventCache = new ArrayList<>();
     private String currentLogFile;
@@ -26,6 +27,7 @@ public class EventLogger {
 
     private EventLogger() {
         File logsDir = new File(LOGS_DIRECTORY);
+
         if (!logsDir.exists()) {
             if (!logsDir.mkdir()) {
                 System.err.println("Failed to create logs directory");
@@ -44,6 +46,7 @@ public class EventLogger {
 
         fileCounter = 1;
         File file;
+
         do {
             currentLogFile = LOGS_DIRECTORY + File.separator +
                     LOG_FILE_PREFIX + dateStr + "-" + fileCounter + LOG_FILE_EXTENSION;

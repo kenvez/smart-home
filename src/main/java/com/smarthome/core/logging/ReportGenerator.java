@@ -72,7 +72,7 @@ public class ReportGenerator {
         }
 
         DoubleSummaryStatistics tempStats = tempSensors.stream()
-                .mapToDouble(sensor -> sensor.readValue())
+                .mapToDouble(TemperatureSensor::readValue)
                 .summaryStatistics();
 
         report.append("Temperature Statistics:\n");
