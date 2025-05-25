@@ -7,5 +7,10 @@ public enum EventType {
     RULE_TRIGGERED,
     RULE_ADDED,
     RULE_REMOVED,
-    SIMULATION_RUN
+    SIMULATION,
+    WARNING,
+    ERROR,
+    INFO,
+    DEBUG,
+    TRACE,
 }

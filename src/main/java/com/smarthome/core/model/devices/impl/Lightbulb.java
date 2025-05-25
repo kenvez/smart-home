@@ -1,9 +1,12 @@
 package com.smarthome.core.model.devices.impl;
 
+import com.smarthome.core.logging.*;
 import com.smarthome.core.model.devices.base.DeviceStatus;
 import com.smarthome.core.model.devices.base.SmartDevice;
 
+
 import java.awt.Color;
+import java.time.LocalTime;
 
 public class Lightbulb extends SmartDevice {
     private double hue;
@@ -104,6 +107,54 @@ public class Lightbulb extends SmartDevice {
 
     @Override
     public void simulate() {
-        System.out.println("Lightbulb simulation!");
+        if (!isOn()) {
+            return;
+        }
+
+        double randomFluctuation = (Math.random() - 0.5) * 0.02;
+        double newValue = Math.min(1.0, Math.max(0.0, getValue() + randomFluctuation));
+
+        setValue(newValue);
+
+        double hueShift = (Math.random() - 0.5) * 2.0;
+        double newHue = (getHue() + hueShift) % 360.0;
+        if (newHue < 0) {
+            newHue += 360.0;
+        }
+
+        setHue(newHue);
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SIMULATION,
+                String.format("Light state - Hue: %.1f°, Saturation: %.2f, Brightness: %.2f%%",
+                        getHue(),
+                        getSaturation(),
+                        getValue() * 100)
+        );
+
+
+        LocalTime currentTime = LocalTime.now();
+        int hour = currentTime.getHour();
+
+
+        if (hour >= 18 && hour < 23) {
+            if (getHue() > 45.0) {
+                setHue(Math.max(30.0, getHue() - 1.0));
+                setSaturation(Math.min(0.15, getSaturation() + 0.01));
+            }
+        } else if (hour >= 6 && hour < 18) {
+            if (getHue() < 180.0) {
+                setHue(Math.min(200.0, getHue() + 1.0));
+                setSaturation(Math.max(0.05, getSaturation() - 0.01));
+            }
+        }
+
+        if (hour >= 22 || hour < 6) {
+            setValue(Math.min(0.5, getValue()));
+        } else if (hour >= 8 && hour < 18) {
+            setValue(Math.max(0.7, getValue()));
+        }
     }
 }

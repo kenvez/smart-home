@@ -12,6 +12,7 @@ public class CLI {
     private final DeviceMenu deviceMenu;
     private final RuleMenu ruleMenu;
     private final SystemStatusMenu systemStatusMenu;
+    private final SimulateDevicesMenu simulateDevicesMenu;
 
     public CLI() {
         this.scanner = new Scanner(System.in);
@@ -20,6 +21,7 @@ public class CLI {
         this.deviceMenu = new DeviceMenu(scanner);
         this.ruleMenu = new RuleMenu(scanner);
         this.systemStatusMenu = new SystemStatusMenu(scanner);
+        this.simulateDevicesMenu = new SimulateDevicesMenu(scanner);
     }
 
     public void start() {
@@ -39,7 +41,7 @@ public class CLI {
                 case '3' -> deviceMenu.start();
                 case '4' -> ruleMenu.start();
                 case '5' -> systemStatusMenu.start();
-                case '6' -> System.out.println("Simulate devices not yet implemented!");
+                case '6' -> simulateDevicesMenu.start();
                 case 'q' -> {
                     System.out.println("\nQuiting program.");
                     ScreenUtils.pressEnterToContinue(scanner);

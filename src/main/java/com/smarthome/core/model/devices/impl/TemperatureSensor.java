@@ -35,29 +35,6 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
         return "°C";
     }
 
-    @Override
-    public void simulate() {
-        if (isOn()) {
-            double deviation = random.nextDouble() * 2 - 1;
-            currentTemperature = Math.min(40, Math.max(-40, currentTemperature + deviation));
-
-            if (random.nextDouble() < 0.05) {
-                SensorStatus[] statuses = SensorStatus.values();
-                SensorStatus newStatus = statuses[random.nextInt(statuses.length)];
-                setSensorStatus(newStatus);
-            }
-
-            if (getParentRoom() != null) {
-                EventLogger.getInstance().logDeviceEvent(
-                        this,
-                        getParentRoom(),
-                        EventType.STATUS_CHANGE,
-                        "Temperature reading: " + String.format("%.1f", currentTemperature) + "°C"
-                );
-            }
-        }
-    }
-
     private void generateRandomTemperature() {
         this.currentTemperature = random.nextDouble() * 80 - 40; // Range from -40 to 40
     }
@@ -109,6 +86,29 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
 
         if (status == DeviceStatus.OFF) {
             setSensorStatus(SensorStatus.ACTIVE);
+        }
+    }
+
+    @Override
+    public void simulate() {
+        if (isOn()) {
+            double deviation = random.nextDouble() * 2 - 1;
+            currentTemperature = Math.min(40, Math.max(-40, currentTemperature + deviation));
+
+            if (random.nextDouble() < 0.05) {
+                SensorStatus[] statuses = SensorStatus.values();
+                SensorStatus newStatus = statuses[random.nextInt(statuses.length)];
+                setSensorStatus(newStatus);
+            }
+
+            if (getParentRoom() != null) {
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.STATUS_CHANGE,
+                        "Temperature reading: " + String.format("%.1f", currentTemperature) + "°C"
+                );
+            }
         }
     }
 }
