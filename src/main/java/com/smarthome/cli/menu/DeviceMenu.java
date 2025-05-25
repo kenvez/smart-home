@@ -45,6 +45,10 @@ public class DeviceMenu {
                     listDevices();
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
+                case '4' -> {
+                    deviceSettings();
+                    ScreenUtils.pressEnterToContinue(scanner);
+                }
                 case 'b' -> {
                     System.out.println("\nGoing back to main menu.");
                     ScreenUtils.pressEnterToContinue(scanner);
@@ -63,6 +67,7 @@ public class DeviceMenu {
         System.out.println("[1] Add device                          ");
         System.out.println("[2] Remove device                       ");
         System.out.println("[3] List devices                        ");
+        System.out.println("[4] Device settings                     ");
         System.out.println("[b] Back to main menu                 \n");
 
         System.out.print("Enter your choice: ");
@@ -266,5 +271,194 @@ public class DeviceMenu {
         System.out.println("\n===========> List rooms <===========\n");
 
         MenuUtils.displayDevicesList(selectedRoom.getDevices());
+    }
+
+    private void deviceSettings() {
+        House selectedHouse = MenuUtils.selectHouse(scanner);
+
+        if (selectedHouse == null) {
+            return;
+        }
+
+        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
+
+        if (selectedRoom == null) {
+            return;
+        }
+
+        SmartDevice selectedDevice = MenuUtils.selectDevice(scanner,
+                selectedRoom);
+
+        if (selectedDevice == null) {
+            return;
+        }
+
+        switch (selectedDevice) {
+            case Lightbulb lightbulb -> handleLightbulbSettings(lightbulb);
+            case Outlet outlet -> handleOutletSettings(outlet);
+            default -> System.out.println("Invalid device type!");
+
+        }
+    }
+
+    private void handleLightbulbSettings(Lightbulb lightbulb) {
+        char choice = ' ';
+
+        while (choice != 'b') {
+            ScreenUtils.clearScreen();
+
+            System.out.println("\n=======> Lightbulb settings <=======\n");
+
+            System.out.println("[1] Change device name                  ");
+            System.out.println("[2] Toggle device                       ");
+            System.out.println("[3] Color settings                      ");
+            System.out.println("[b] Back to device menu               \n");
+
+            System.out.print("Enter your choice: ");
+
+            choice = scanner.next().charAt(0);
+
+            scanner.nextLine();
+
+            switch (choice) {
+                case '1' -> changeName(lightbulb);
+                case '2' -> toggleDevice(lightbulb);
+                case '3' -> colorSettings(lightbulb);
+                case 'b' -> System.out.println("Going back to device menu...");
+                default -> System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    private void handleOutletSettings(Outlet outlet) {
+        char choice = ' ';
+
+        while (choice != 'b') {
+            ScreenUtils.clearScreen();
+
+            System.out.println("\n========> Outlet settings <=========\n");
+
+            System.out.println("[1] Change device name                  ");
+            System.out.println("[2] Toggle device                       ");
+            System.out.println("[3] Toggle in-use status                ");
+            System.out.println("[4] Display current status              ");
+            System.out.println("[b] Back to device menu               \n");
+
+            System.out.print("Enter your choice: ");
+
+            choice = scanner.next().charAt(0);
+
+            scanner.nextLine();
+
+            switch (choice) {
+                case '1' -> changeName(outlet);
+                case '2' -> toggleDevice(outlet);
+                case '3' -> toggleInUseStatus(outlet);
+                case '4' -> displayOutletStatus(outlet);
+                case 'b' -> System.out.println("Going back to device menu...");
+                default -> System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    private void changeName(SmartDevice device) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n=======> Change device name <=======\n");
+
+        System.out.print("Enter new device name: ");
+
+        String newName = scanner.nextLine();
+
+        device.setName(newName);
+
+        System.out.printf("\n%s name changed successfully!", device.getName());
+    }
+
+    private void toggleDevice(SmartDevice device) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n=========> Toggle device <==========\n");
+
+        if (device.isOn()) {
+            device.turnOff();
+            System.out.println("\nDevice turned off!");
+        } else {
+            device.turnOn();
+            System.out.println("\nDevice turned on!");
+        }
+    }
+
+    private void colorSettings(Lightbulb lightbulb) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n========> Color settings <==========\n");
+
+        try {
+            System.out.printf("Current settings: Hue = %.1f°, Saturation = %" +
+                    ".2f, Value = %.2f%n", lightbulb.getHue(),
+                    lightbulb.getSaturation(), lightbulb.getValue());
+
+            System.out.print("\nEnter new hue(0-359, press Enter to skip): ");
+
+            String hueInput = scanner.nextLine();
+
+            if (!hueInput.isEmpty()) {
+                double hue = Double.parseDouble(hueInput);
+
+                lightbulb.setHue(hue);
+            }
+
+            System.out.print("\nEnter new saturation(0-1, press Enter to skip): ");
+
+            String saturationInput = scanner.nextLine();
+
+            if (!saturationInput.isEmpty()) {
+                double saturation = Double.parseDouble(saturationInput);
+
+                lightbulb.setSaturation(saturation);
+            }
+
+            System.out.print("\nEnter new value(0-1, press Enter to skip): ");
+
+            String valueInput = scanner.nextLine();
+
+            if (!valueInput.isEmpty()) {
+                double value = Double.parseDouble(valueInput);
+
+                lightbulb.setValue(value);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void toggleInUseStatus(Outlet outlet) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n======> Toggle in-use status <======\n");
+
+        System.out.println("Current in-use status: " + outlet.isInUse());
+        System.out.print("\nToggle in-use status? (y/n): ");
+
+        char choice = scanner.next().charAt(0);
+
+        if (choice == 'y') {
+            outlet.setInUse(!outlet.isInUse());
+
+            System.out.println("\nIn-use status changed to: " + outlet.isInUse());
+        }
+    }
+
+    private void displayStatus(Outlet outlet) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n=========> Display status <=========\n");
+
+        System.out.println("Name: " + outlet.getName());
+        System.out.println("Power Status: " + outlet.getStatus());
+        System.out.println("In Use: " + outlet.isInUse());
     }
 }
