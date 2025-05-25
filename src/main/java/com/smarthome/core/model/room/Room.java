@@ -1,11 +1,9 @@
 package com.smarthome.core.model.room;
 
-import com.smarthome.core.logging.EventLogger;
-import com.smarthome.core.logging.EventType;
+import com.smarthome.core.logging.*;
 import com.smarthome.core.model.devices.base.SmartDevice;
 
-import java.util.TreeSet;
-import java.util.Set;
+import java.util.*;
 
 public class Room {
     private String name;
@@ -15,7 +13,7 @@ public class Room {
     public Room(String name, RoomType type) {
         this.name = name;
         this.type = type;
-        this.devices = new TreeSet<>((SmartDevice smartDeviceOne, SmartDevice smartDeviceTwo) -> smartDeviceOne.getName().compareToIgnoreCase(smartDeviceTwo.getName()));
+        this.devices = new HashSet<>();
     }
 
     public String getName() {

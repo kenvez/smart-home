@@ -21,6 +21,7 @@ public class DeviceManagement {
         if (instance == null) {
             instance = new DeviceManagement();
         }
+
         return instance;
     }
 

@@ -33,11 +33,12 @@ public class MenuUtils {
         int index = 1;
 
         for (House house : housesList) {
-            System.out.printf("[%d] %s (%.6f, %.6f)%n",
+            System.out.printf("[%d] %s (%.6f, %.6f) (Type: %s)%n",
                     index++,
                     house.getName(),
                     house.getLatitude(),
-                    house.getLongitude()
+                    house.getLongitude(),
+                    house.getType()
             );
         }
     }
@@ -103,11 +104,12 @@ public class MenuUtils {
         int index = 1;
 
         for (House house : houses) {
-            System.out.printf("[%d] %s [%.6f, %.6f]%n",
+            System.out.printf("[%d] %s (%.6f, %.6f) (Type: %s)%n",
                     index++,
                     house.getName(),
                     house.getLatitude(),
-                    house.getLongitude()
+                    house.getLongitude(),
+                    house.getType()
             );
         }
 

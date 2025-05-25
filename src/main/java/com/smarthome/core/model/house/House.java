@@ -2,42 +2,45 @@ package com.smarthome.core.model.house;
 
 import com.smarthome.core.model.room.Room;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class House {
     private String name;
     private double latitude;
     private double longitude;
     private final Set<Room> rooms;
+    private final HouseType type;
 
-    public House(String name, double latitude, double longitude) {
+    public House(String name, double latitude, double longitude, HouseType type) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.rooms = new TreeSet<>((roomOne, roomTwo) -> roomOne.getName().compareToIgnoreCase(roomTwo.getName()));
+        this.type = type;
+        this.rooms = new HashSet<>();
     }
 
     public String getName() {
         return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public double getLatitude() {
         return this.latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return this.longitude;
+    }
+
+    public HouseType getType() {
+        return this.type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
     public void setLongitude(double longitude) {
