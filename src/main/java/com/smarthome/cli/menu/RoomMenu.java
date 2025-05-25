@@ -154,6 +154,6 @@ public class RoomMenu {
 
         System.out.println("\n===========> List rooms <===========\n");
 
-        List<Room> rooms = MenuUtils.displayRoomsList(selectedHouse.getRooms());
+        MenuUtils.displayRoomsList(selectedHouse.getRooms());
     }
 }

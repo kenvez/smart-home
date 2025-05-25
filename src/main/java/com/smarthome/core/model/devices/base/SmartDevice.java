@@ -5,13 +5,12 @@ import com.smarthome.core.logging.EventType;
 import com.smarthome.core.model.room.Room;
 import com.smarthome.core.model.rules.Rule;
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
-public abstract class SmartDevice implements Switchable {
+public abstract class SmartDevice implements Switchable, ObservableDevice {
     private final String id;
-    private final Set<Rule> rules;
+    private final Set<Rule<?,?>> rules;
+    private final List<DeviceObserver> observers;
     private String name;
     private DeviceStatus status;
     private Room parentRoom;
@@ -22,7 +21,8 @@ public abstract class SmartDevice implements Switchable {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.status = status;
-        this.rules = new TreeSet<>((ruleOne, ruleTwo) -> ruleOne.getName().compareToIgnoreCase(ruleTwo.getName()));
+        this.rules = new HashSet<>();
+        this.observers = new ArrayList<>();
     }
 
     public String getId() {
@@ -56,7 +56,9 @@ public abstract class SmartDevice implements Switchable {
             throw new IllegalArgumentException("Unsupported device status: " + status);
 
         DeviceStatus oldStatus = this.status;
+
         this.status = status;
+        notifyObservers();
 
         if (oldStatus != status) {
             String description = "Device status changed from " + oldStatus + " to " + status;
@@ -69,6 +71,25 @@ public abstract class SmartDevice implements Switchable {
             );
         }
 
+    }
+
+    @Override
+    public void addObserver(DeviceObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public void removeObserver(DeviceObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (DeviceObserver observer : observers) {
+            observer.update(this);
+        }
     }
 
     @Override
@@ -94,7 +115,7 @@ public abstract class SmartDevice implements Switchable {
         return parentRoom;
     }
 
-    public Set<Rule> getRules() {
+    public Set<Rule<?,?>> getRules() {
         return rules;
     }
 }

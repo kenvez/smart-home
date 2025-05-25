@@ -15,7 +15,7 @@ public class MenuUtils {
         System.out.println("[2] Manage rooms                        ");
         System.out.println("[3] Manage devices                      ");
         System.out.println("[4] Manage rules                        ");
-        System.out.println("[5] Display system status               ");
+        System.out.println("[5] System status                       ");
         System.out.println("[6] Simulate devices                    ");
         System.out.println("[q] Quit program                      \n");
 
@@ -33,7 +33,7 @@ public class MenuUtils {
         int index = 1;
 
         for (House house : housesList) {
-            System.out.printf("[%d] %s [%.6f, %.6f]%n",
+            System.out.printf("[%d] %s (%.6f, %.6f)%n",
                     index++,
                     house.getName(),
                     house.getLatitude(),
@@ -53,7 +53,7 @@ public class MenuUtils {
 
         int index = 1;
         for (Room room : roomsList) {
-            System.out.printf("[%d] %s [Type: %s]%n",
+            System.out.printf("[%d] %s (Type: %s)%n",
                     index++,
                     room.getName(),
                     room.getType()
@@ -75,7 +75,7 @@ public class MenuUtils {
         int index = 1;
 
         for (SmartDevice device : devicesList) {
-            System.out.printf("[%d] %s [Status: %s]%n",
+            System.out.printf("[%d] %s (Status: %s)%n",
                     index++,
                     device.getName(),
                     device.getStatus()
@@ -84,8 +84,6 @@ public class MenuUtils {
 
         return devicesList;
     }
-
-
 
     public static House selectHouse(Scanner scanner) {
         List<House> houses = new ArrayList<>(Main.houses);
@@ -172,6 +170,52 @@ public class MenuUtils {
                 return selectedRoom;
             } else {
                 System.out.println("\nInvalid room number!");
+
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("\nPlease enter a valid number.");
+
+            return null;
+        }
+    }
+
+    public static SmartDevice selectDevice(Scanner scanner, Room selectedRoom) {
+        List<SmartDevice> devices = new ArrayList<>(selectedRoom.getDevices());
+
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n=========> Select device <==========\n");
+
+        if (devices.isEmpty()) {
+            System.out.println("No devices found! Please add a device first.");
+
+            return null;
+        }
+
+        int index = 1;
+
+        for (SmartDevice device : devices) {
+            System.out.printf("[%d] %s (Status: %s)%n",
+                    index++,
+                    device.getName(),
+                    device.getStatus()
+            );
+        }
+
+        System.out.print("\nEnter your choice: ");
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice > 0 && choice <= devices.size()) {
+                SmartDevice selectedDevice = devices.get(choice - 1);
+
+                System.out.println("Selected device: " + selectedDevice.getName());
+
+                return selectedDevice;
+            } else {
+                System.out.println("\nInvalid device number!");
 
                 return null;
             }

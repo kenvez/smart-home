@@ -12,6 +12,8 @@ public class Outlet extends SmartDevice {
 
         if (status == DeviceStatus.ON) {
             setStatus(DeviceStatus.OFF);
+
+            notifyObservers();
         }
     }
 
@@ -21,6 +23,8 @@ public class Outlet extends SmartDevice {
 
     public void setInUse(boolean inUse) {
         this.inUse = inUse;
+
+        notifyObservers();
 
         if (!inUse && isOn()) {
             turnOff();

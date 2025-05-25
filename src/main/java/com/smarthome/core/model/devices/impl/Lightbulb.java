@@ -26,6 +26,8 @@ public class Lightbulb extends SmartDevice {
             throw new IllegalArgumentException("Hue must be in [0, 360): " + hue);
 
         this.hue = hue;
+
+        notifyObservers();
     }
 
     public double getSaturation() {
@@ -37,6 +39,8 @@ public class Lightbulb extends SmartDevice {
             throw new IllegalArgumentException("Saturation must be in [0, 1]: " + saturation);
 
         this.saturation = saturation;
+
+        notifyObservers();
     }
 
     public double getValue() {
@@ -48,6 +52,8 @@ public class Lightbulb extends SmartDevice {
             throw new IllegalArgumentException("Value must be in [0, 1]: " + value);
 
         this.value = value;
+
+        notifyObservers();
     }
 
     public Color getRGBColor() {

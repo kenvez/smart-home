@@ -72,7 +72,10 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
         }
 
         SensorStatus oldStatus = this.sensorStatus;
+
         this.sensorStatus = status;
+
+        notifyObservers();
 
         if (oldStatus != status && getParentRoom() != null) {
             EventLogger.getInstance().logDeviceEvent(
@@ -92,12 +95,17 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
         if (temperature < -40 || temperature > 40) {
             throw new IllegalArgumentException("Temperature must be between -40 and 40 degrees Celsius");
         }
+
         this.currentTemperature = temperature;
+
+        notifyObservers();
     }
 
     @Override
     public void setStatus(DeviceStatus status) {
         super.setStatus(status);
+
+        notifyObservers();
 
         if (status == DeviceStatus.OFF) {
             setSensorStatus(SensorStatus.ACTIVE);

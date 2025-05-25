@@ -1,12 +1,14 @@
 package com.smarthome.cli.menu;
 
-import com.smarthome.cli.utils.*;
+import com.smarthome.core.management.DeviceManagement;
 import com.smarthome.core.model.devices.base.DeviceStatus;
 import com.smarthome.core.model.devices.base.SmartDevice;
 import com.smarthome.core.model.devices.impl.Lightbulb;
 import com.smarthome.core.model.devices.impl.Outlet;
+
 import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
+import com.smarthome.cli.utils.*;
 
 import java.awt.*;
 import java.util.*;
@@ -117,7 +119,10 @@ public class DeviceMenu {
 
                 try {
                     Lightbulb lightbulb = new Lightbulb(name, DeviceStatus.OFF);
+
                     device = lightbulb;
+
+                    DeviceManagement.getInstance().registerDevice(device);
 
                     double hue = lightbulb.getHue();
                     double saturation = lightbulb.getSaturation();
@@ -178,6 +183,8 @@ public class DeviceMenu {
             case '2' -> {
                 device = new Outlet(name, DeviceStatus.OFF);
 
+                DeviceManagement.getInstance().registerDevice(device);
+
                 System.out.println("\nOutlet created successfully!");
             }
             case 'b' -> System.out.println("Going back to device menu...");
@@ -227,6 +234,9 @@ public class DeviceMenu {
             if (choice > 0 && choice <= devices.size()) {
                 SmartDevice deviceToRemove = devices.get(choice - 1);
 
+                DeviceManagement.getInstance().unregisterDevice(deviceToRemove);
+                selectedRoom.removeDevice(deviceToRemove);
+
                 selectedRoom.removeDevice(deviceToRemove);
 
                 System.out.println("\nDevice '" + deviceToRemove.getName() + "' removed successfully!");
@@ -255,7 +265,6 @@ public class DeviceMenu {
 
         System.out.println("\n===========> List rooms <===========\n");
 
-        List<SmartDevice> devices=
-                MenuUtils.displayDevicesList(selectedRoom.getDevices());
+        MenuUtils.displayDevicesList(selectedRoom.getDevices());
     }
 }
