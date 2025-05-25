@@ -8,8 +8,8 @@ public class House {
     private String name;
     private double latitude;
     private double longitude;
+    private HouseType type;
     private final Set<Room> rooms;
-    private final HouseType type;
 
     public House(String name, double latitude, double longitude, HouseType type) {
         this.name = name;
@@ -41,6 +41,10 @@ public class House {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public void setType(HouseType type) {
+        this.type = type;
     }
 
     public void setLongitude(double longitude) {

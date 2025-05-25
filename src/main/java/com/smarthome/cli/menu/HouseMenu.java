@@ -192,7 +192,7 @@ public class HouseMenu {
 
                 System.out.println("\nHouse name changed successfully!");
 
-                ScreenUtils.pressEnterToContinue(scanner);
+                scanner.nextLine();
             }
             case '2' -> {
                 ScreenUtils.clearScreen();
@@ -206,7 +206,7 @@ public class HouseMenu {
 
                 System.out.println("\nHouse latitude changed successfully!");
 
-                ScreenUtils.pressEnterToContinue(scanner);
+                scanner.nextLine();
             }
             case '3' -> {
                 ScreenUtils.clearScreen();
@@ -220,7 +220,7 @@ public class HouseMenu {
 
                 System.out.println("\nHouse longitude changed successfully!");
 
-                ScreenUtils.pressEnterToContinue(scanner);
+                scanner.nextLine();
             }
             case '4' -> {
                 ScreenUtils.clearScreen();
@@ -235,15 +235,19 @@ public class HouseMenu {
 
                 System.out.print("\nEnter your choice: ");
 
-                ScreenUtils.pressEnterToContinue(scanner);
+                selectedHouse.setType(types[Integer.parseInt(scanner.next()) - 1]);
+
+                scanner.nextLine();
             }
             case 'b' -> {
                 System.out.println("\nGoing back to house menu.");
-                ScreenUtils.pressEnterToContinue(scanner);
+
+                scanner.nextLine();
             }
             default -> {
                 System.out.println("\nInvalid choice! Please try again.");
-                ScreenUtils.pressEnterToContinue(scanner);
+
+                scanner.nextLine();
             }
         }
     }

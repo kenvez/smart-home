@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Room {
     private String name;
-    private final RoomType type;
+    private RoomType type;
     private final Set<SmartDevice> devices;
 
     public Room(String name, RoomType type) {
@@ -20,12 +20,16 @@ public class Room {
         return this.name;
     }
 
+    public RoomType getType() {
+        return this.type;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public RoomType getType() {
-        return this.type;
+    public void setType(RoomType type) {
+        this.type = type;
     }
 
     public void addDevice(SmartDevice device) {

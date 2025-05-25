@@ -37,6 +37,10 @@ public class RoomMenu {
                     listRooms();
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
+                case '4' -> {
+                    roomSettings();
+                    ScreenUtils.pressEnterToContinue(scanner);
+                }
                 case 'b' -> {
                     System.out.println("\nGoing back to main menu.");
                     ScreenUtils.pressEnterToContinue(scanner);
@@ -55,6 +59,7 @@ public class RoomMenu {
         System.out.println("[1] Add room                            ");
         System.out.println("[2] Remove room                         ");
         System.out.println("[3] List rooms                          ");
+        System.out.println("[4] Room settings                       ");
         System.out.println("[b] Back to main menu                 \n");
 
         System.out.print("Enter your choice: ");
@@ -155,5 +160,76 @@ public class RoomMenu {
         System.out.println("\n===========> List rooms <===========\n");
 
         MenuUtils.displayRoomsList(selectedHouse.getRooms());
+    }
+
+    private void roomSettings() {
+        House selectedHouse = MenuUtils.selectHouse(scanner);
+
+        if (selectedHouse == null) {
+            return;
+        }
+
+        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
+
+        if (selectedRoom == null) {
+            return;
+        }
+
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n=========> Room settings <==========\n");
+
+        System.out.println("[1] Change room name                   ");
+        System.out.println("[2] Change room type                   ");
+        System.out.println("[b] Back to room menu                \n");
+
+        System.out.print("Enter your choice: ");
+
+        char choice = scanner.next().charAt(0);
+
+        switch (choice) {
+            case '1' -> {
+                ScreenUtils.clearScreen();
+
+                System.out.println("\n=========> Room settings <==========\n");
+
+                System.out.print("Enter new room name: ");
+
+                String newName = scanner.next();
+
+                selectedRoom.setName(newName);
+
+                System.out.println("\nRoom name changed successfully!");
+
+                scanner.nextLine();
+            }
+            case '2' -> {
+                ScreenUtils.clearScreen();
+
+                System.out.println("\n=========> Room settings <==========\n");
+
+                RoomType[] types = RoomType.values();
+
+                for (int i = 0; i < types.length; i++) {
+                    System.out.printf("[%d] %s%n", i + 1, types[i]);
+                }
+
+                System.out.print("\nEnter your choice: ");
+
+                selectedRoom.setType(types[Integer.parseInt(scanner.next()) - 1]);
+
+                scanner.nextLine();
+            }
+            case 'b' -> {
+                System.out.println("\nGoing back to room menu.");
+
+                scanner.nextLine();
+            }
+            default -> {
+                System.out.println("\nInvalid choice! Please try again.");
+
+                scanner.nextLine();
+            }
+        }
     }
 }
