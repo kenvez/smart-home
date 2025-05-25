@@ -128,7 +128,7 @@ public class Lightbulb extends SmartDevice {
                 this,
                 getParentRoom(),
                 EventType.SIMULATION,
-                String.format("Light state - Hue: %.1f°, Saturation: %.2f, Brightness: %.2f%%",
+                String.format("Light state - Hue: %.1f, Saturation: %.2f, Brightness: %.2f%%",
                         getHue(),
                         getSaturation(),
                         getValue() * 100)

@@ -6,7 +6,8 @@ import com.smarthome.core.model.devices.base.SmartDevice;
 public class DeviceMonitor implements DeviceObserver {
     @Override
     public void update(SmartDevice device) {
-        System.out.println("Device '" + device.getName() + "' changed state: " + device.getStatus()
+        System.out.println("Device '" + device.getName() + "' changed status:" +
+                " " + device.getStatus()
         );
     }
 }

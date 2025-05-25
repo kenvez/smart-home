@@ -1,13 +1,10 @@
 package com.smarthome.cli.menu;
 
 import com.smarthome.core.management.DeviceManagement;
-import com.smarthome.core.model.devices.base.DeviceStatus;
-import com.smarthome.core.model.devices.base.SmartDevice;
-import com.smarthome.core.model.devices.impl.Lightbulb;
-import com.smarthome.core.model.devices.impl.Outlet;
-
 import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
+import com.smarthome.core.model.devices.base.*;
+import com.smarthome.core.model.devices.impl.*;
 import com.smarthome.cli.utils.*;
 
 import java.awt.*;
@@ -296,69 +293,91 @@ public class DeviceMenu {
         switch (selectedDevice) {
             case Lightbulb lightbulb -> handleLightbulbSettings(lightbulb);
             case Outlet outlet -> handleOutletSettings(outlet);
+            case CoffeeMachine coffeeMachine -> handleCoffeeMachineSettings(coffeeMachine);
             default -> System.out.println("Invalid device type!");
 
         }
     }
 
     private void handleLightbulbSettings(Lightbulb lightbulb) {
-        char choice = ' ';
+        ScreenUtils.clearScreen();
 
-        while (choice != 'b') {
-            ScreenUtils.clearScreen();
+        System.out.println("\n=======> Lightbulb settings <=======\n");
 
-            System.out.println("\n=======> Lightbulb settings <=======\n");
+        System.out.println("[1] Change device name                  ");
+        System.out.println("[2] Toggle device                       ");
+        System.out.println("[3] Color settings                      ");
+        System.out.println("[b] Back to device menu               \n");
 
-            System.out.println("[1] Change device name                  ");
-            System.out.println("[2] Toggle device                       ");
-            System.out.println("[3] Color settings                      ");
-            System.out.println("[b] Back to device menu               \n");
+        System.out.print("Enter your choice: ");
 
-            System.out.print("Enter your choice: ");
+        char choice = scanner.next().charAt(0);
 
-            choice = scanner.next().charAt(0);
+        scanner.nextLine();
 
-            scanner.nextLine();
-
-            switch (choice) {
-                case '1' -> changeName(lightbulb);
-                case '2' -> toggleDevice(lightbulb);
-                case '3' -> colorSettings(lightbulb);
-                case 'b' -> System.out.println("Going back to device menu...");
-                default -> System.out.println("Invalid choice!");
-            }
+        switch (choice) {
+            case '1' -> changeName(lightbulb);
+            case '2' -> toggleDevice(lightbulb);
+            case '3' -> colorSettings(lightbulb);
+            case 'b' -> System.out.println("Going back to device menu...");
+            default -> System.out.println("Invalid choice!");
         }
     }
 
     private void handleOutletSettings(Outlet outlet) {
-        char choice = ' ';
+        ScreenUtils.clearScreen();
 
-        while (choice != 'b') {
-            ScreenUtils.clearScreen();
+        System.out.println("\n========> Outlet settings <=========\n");
 
-            System.out.println("\n========> Outlet settings <=========\n");
+        System.out.println("[1] Change device name                  ");
+        System.out.println("[2] Toggle device                       ");
+        System.out.println("[3] Toggle in-use status                ");
+        System.out.println("[4] Display current status              ");
+        System.out.println("[b] Back to device menu               \n");
 
-            System.out.println("[1] Change device name                  ");
-            System.out.println("[2] Toggle device                       ");
-            System.out.println("[3] Toggle in-use status                ");
-            System.out.println("[4] Display current status              ");
-            System.out.println("[b] Back to device menu               \n");
+        System.out.print("Enter your choice: ");
 
-            System.out.print("Enter your choice: ");
+        char choice = scanner.next().charAt(0);
 
-            choice = scanner.next().charAt(0);
+        scanner.nextLine();
 
-            scanner.nextLine();
-
-            switch (choice) {
-                case '1' -> changeName(outlet);
-                case '2' -> toggleDevice(outlet);
-                case '3' -> toggleInUseStatus(outlet);
-                case '4' -> displayOutletStatus(outlet);
-                case 'b' -> System.out.println("Going back to device menu...");
-                default -> System.out.println("Invalid choice!");
-            }
+        switch (choice) {
+            case '1' -> changeName(outlet);
+            case '2' -> toggleDevice(outlet);
+            case '3' -> toggleInUseStatus(outlet);
+            case 'b' -> System.out.println("Going back to device menu...");
+            default -> System.out.println("Invalid choice!");
         }
+    }
+
+    private void handleCoffeeMachineSettings(CoffeeMachine coffeeMachine) {
+        System.out.println("\n====> Coffee Machine Settings <=====\n");
+
+        System.out.println("[1] Change device name                  ");
+        System.out.println("[2] Toggle device                       ");
+        System.out.println("[3] Select coffee type                  ");
+        System.out.println("[4] Select cup size                     ");
+        System.out.println("[5] Brew coffee                         ");
+        System.out.println("[6] Refill water                        ");
+        System.out.println("[b] Back to device menu                \n");
+
+        System.out.print("Enter your choice: ");
+
+        char choice = scanner.next().charAt(0);
+
+        scanner.nextLine();
+
+        switch (choice) {
+            case '1' -> changeName(coffeeMachine);
+            case '2' -> toggleDevice(coffeeMachine);
+            case '3' -> selectCoffeeType(coffeeMachine);
+            case '4' -> selectCupSize(coffeeMachine);
+            case '5' -> brewCoffee(coffeeMachine);
+            case '6' -> refillWater(coffeeMachine);
+            case 'b' -> System.out.println("Going back to device menu...");
+            default -> System.out.println("Invalid choice!");
+        }
+
     }
 
     private void changeName(SmartDevice device) {
@@ -372,7 +391,8 @@ public class DeviceMenu {
 
         device.setName(newName);
 
-        System.out.printf("\n%s name changed successfully!", device.getName());
+        System.out.printf("\n%s name changed successfully!\n",
+                device.getName());
     }
 
     private void toggleDevice(SmartDevice device) {
@@ -395,7 +415,7 @@ public class DeviceMenu {
         System.out.println("\n========> Color settings <==========\n");
 
         try {
-            System.out.printf("Current settings: Hue = %.1f°, Saturation = %" +
+            System.out.printf("Current settings: Hue = %.1f, Saturation = %" +
                     ".2f, Value = %.2f%n", lightbulb.getHue(),
                     lightbulb.getSaturation(), lightbulb.getValue());
 
@@ -409,7 +429,7 @@ public class DeviceMenu {
                 lightbulb.setHue(hue);
             }
 
-            System.out.print("\nEnter new saturation(0-1, press Enter to skip): ");
+            System.out.print("Enter new saturation(0-1, press Enter to skip): ");
 
             String saturationInput = scanner.nextLine();
 
@@ -419,7 +439,7 @@ public class DeviceMenu {
                 lightbulb.setSaturation(saturation);
             }
 
-            System.out.print("\nEnter new value(0-1, press Enter to skip): ");
+            System.out.print("Enter new value(0-1, press Enter to skip): ");
 
             String valueInput = scanner.nextLine();
 
@@ -429,9 +449,9 @@ public class DeviceMenu {
                 lightbulb.setValue(value);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid number format!");
+            System.out.println("\nInvalid number format!");
         } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("\nError: " + e.getMessage());
         }
     }
 
@@ -452,13 +472,100 @@ public class DeviceMenu {
         }
     }
 
-    private void displayStatus(Outlet outlet) {
+    private void selectCoffeeType(CoffeeMachine coffeeMachine) {
         ScreenUtils.clearScreen();
 
-        System.out.println("\n=========> Display status <=========\n");
+        System.out.println("\n=======> Select coffee type <========\n");
 
-        System.out.println("Name: " + outlet.getName());
-        System.out.println("Power Status: " + outlet.getStatus());
-        System.out.println("In Use: " + outlet.isInUse());
+        CoffeeType[] types = CoffeeType.values();
+
+        for (int i = 0; i < types.length; i++) {
+            System.out.printf("[%d] %s%n", i + 1, types[i]);
+        }
+
+        System.out.print("\nEnter your choice: ");
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice > 0 && choice <= types.length) {
+                coffeeMachine.setCoffeeType(types[choice - 1]);
+
+                System.out.println("\nCoffee type changed to: " + types[choice - 1]);
+            } else {
+                System.out.println("\nInvalid choice!");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("\nPlease enter a valid number.");
+        }
+
+    }
+
+    private void selectCupSize(CoffeeMachine coffeeMachine) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n========> Select cup size <=========\n");
+
+        CupSize[] sizes = CupSize.values();
+
+        for (int i = 0; i < sizes.length; i++) {
+            System.out.printf("[%d] %s%n", i + 1, sizes[i]);
+        }
+
+        System.out.print("\nEnter your choice: ");
+
+        try {
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice > 0 && choice <= sizes.length) {
+                coffeeMachine.setCupSize(sizes[choice - 1]);
+
+                System.out.println("\nCup size changed to: " + sizes[choice - 1]);
+            } else {
+                System.out.println("\nInvalid choice!");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("\nPlease enter a valid number.");
+        }
+
+    }
+
+    private void brewCoffee(CoffeeMachine coffeeMachine) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n==========> Brew coffee <===========\n");
+
+        System.out.printf("Current settings: %s (%s)%n",
+                coffeeMachine.getCoffeeType(),
+                coffeeMachine.getCupSize());
+        System.out.printf("Water level: %d%%%n", coffeeMachine.getWaterLevel());
+
+        System.out.print("\nStart brewing? (y/n): ");
+        String input = scanner.nextLine().toLowerCase();
+
+        if (input.equals("y")) {
+            coffeeMachine.brewCoffee();
+            if (coffeeMachine.isBrewing()) {
+                System.out.println("\nStarted brewing coffee!");
+            }
+        }
+
+    }
+
+    private void refillWater(CoffeeMachine coffeeMachine) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n==========> Refill water <==========\n");
+
+        System.out.printf("Current water level: %d%%%n", coffeeMachine.getWaterLevel());
+
+        System.out.print("\nRefill water to 100%? (y/n): ");
+        String input = scanner.nextLine().toLowerCase();
+
+        if (input.equals("y")) {
+            coffeeMachine.refill();
+            System.out.println("\nWater refilled to 100%");
+        }
+
     }
 }
