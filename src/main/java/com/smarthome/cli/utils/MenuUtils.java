@@ -227,4 +227,29 @@ public class MenuUtils {
             return null;
         }
     }
+
+    public static SelectionResult performSelection(Scanner scanner, boolean needDevice) {
+        House selectedHouse = selectHouse(scanner);
+
+        if (selectedHouse == null) {
+            return null;
+        }
+
+        Room selectedRoom = selectRoom(scanner, selectedHouse);
+
+        if (selectedRoom == null) {
+            return null;
+        }
+
+        SmartDevice selectedDevice = null;
+
+        if (needDevice) {
+            selectedDevice = selectDevice(scanner, selectedRoom);
+            if (selectedDevice == null) {
+                return null;
+            }
+        }
+
+        return new SelectionResult(selectedRoom, selectedDevice);
+    }
 }

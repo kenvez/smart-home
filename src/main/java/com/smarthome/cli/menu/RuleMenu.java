@@ -66,23 +66,13 @@ public class RuleMenu {
     }
 
     private void addRule() {
-        House selectedHouse = MenuUtils.selectHouse(scanner);
+        SelectionResult selection = MenuUtils.performSelection(scanner, true);
 
-        if (selectedHouse == null) {
+        if (selection == null) {
             return;
         }
 
-        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
-
-        if (selectedRoom == null) {
-            return;
-        }
-
-        SmartDevice selectedDevice = MenuUtils.selectDevice(scanner, selectedRoom);
-
-        if (selectedDevice == null) {
-            return;
-        }
+        SmartDevice selectedDevice = selection.getDevice();
 
         ScreenUtils.clearScreen();
 
@@ -90,23 +80,13 @@ public class RuleMenu {
     }
 
     private void removeRule() {
-        House selectedHouse = MenuUtils.selectHouse(scanner);
+        SelectionResult selection = MenuUtils.performSelection(scanner, true);
 
-        if (selectedHouse == null) {
+        if (selection == null) {
             return;
         }
 
-        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
-
-        if (selectedRoom == null) {
-            return;
-        }
-
-        SmartDevice selectedDevice = MenuUtils.selectDevice(scanner, selectedRoom);
-
-        if (selectedDevice == null) {
-            return;
-        }
+        SmartDevice selectedDevice = selection.getDevice();
 
         ScreenUtils.clearScreen();
 

@@ -1,7 +1,6 @@
 package com.smarthome.cli.menu;
 
 import com.smarthome.core.management.DeviceManagement;
-import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
 import com.smarthome.core.model.devices.base.*;
 import com.smarthome.core.model.devices.impl.*;
@@ -71,17 +70,13 @@ public class DeviceMenu {
     }
 
     private void addDevice() {
-        House selectedHouse = MenuUtils.selectHouse(scanner);
+        SelectionResult selection = MenuUtils.performSelection(scanner, false);
 
-        if (selectedHouse == null) {
+        if (selection == null) {
             return;
         }
 
-        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
-
-        if (selectedRoom == null) {
-            return;
-        }
+        Room selectedRoom = selection.getRoom();
 
         ScreenUtils.clearScreen();
 
@@ -103,11 +98,14 @@ public class DeviceMenu {
 
         System.out.println("[1] Lightbulb                           ");
         System.out.println("[2] Outlet                              ");
+        System.out.println("[3] Coffee Machine                      ");
         System.out.println("[b] Back to device menu");
 
         System.out.print("\nEnter your choice: ");
 
         char type = scanner.next().charAt(0);
+
+        scanner.nextLine();
 
         SmartDevice device = null;
 
@@ -116,8 +114,6 @@ public class DeviceMenu {
                 ScreenUtils.clearScreen();
 
                 System.out.println("\n=======> Lightbulb settings <=======\n");
-
-                scanner.nextLine();
 
                 try {
                     Lightbulb lightbulb = new Lightbulb(name, DeviceStatus.OFF);
@@ -189,6 +185,13 @@ public class DeviceMenu {
 
                 System.out.println("\nOutlet created successfully!");
             }
+            case '3' -> {
+                device = new CoffeeMachine(name, DeviceStatus.OFF);
+
+                DeviceManagement.getInstance().registerDevice(device);
+
+                System.out.println("\nCoffee machine created successfully!");
+            }
             case 'b' -> System.out.println("Going back to device menu...");
 
             default -> {
@@ -202,17 +205,13 @@ public class DeviceMenu {
     }
 
     private void removeDevice() {
-        House selectedHouse = MenuUtils.selectHouse(scanner);
+        SelectionResult selection = MenuUtils.performSelection(scanner, false);
 
-        if (selectedHouse == null) {
+        if (selection == null) {
             return;
         }
 
-        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
-
-        if (selectedRoom == null) {
-            return;
-        }
+        Room selectedRoom = selection.getRoom();
 
         ScreenUtils.clearScreen();
 
@@ -251,17 +250,13 @@ public class DeviceMenu {
     }
 
     private void listDevices() {
-        House selectedHouse = MenuUtils.selectHouse(scanner);
+        SelectionResult selection = MenuUtils.performSelection(scanner, false);
 
-        if (selectedHouse == null) {
+        if (selection == null) {
             return;
         }
 
-        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
-
-        if (selectedRoom == null) {
-            return;
-        }
+        Room selectedRoom = selection.getRoom();
 
         ScreenUtils.clearScreen();
 
@@ -271,24 +266,13 @@ public class DeviceMenu {
     }
 
     private void deviceSettings() {
-        House selectedHouse = MenuUtils.selectHouse(scanner);
+        SelectionResult selection = MenuUtils.performSelection(scanner, true);
 
-        if (selectedHouse == null) {
+        if (selection == null) {
             return;
         }
 
-        Room selectedRoom = MenuUtils.selectRoom(scanner, selectedHouse);
-
-        if (selectedRoom == null) {
-            return;
-        }
-
-        SmartDevice selectedDevice = MenuUtils.selectDevice(scanner,
-                selectedRoom);
-
-        if (selectedDevice == null) {
-            return;
-        }
+        SmartDevice selectedDevice = selection.getDevice();
 
         switch (selectedDevice) {
             case Lightbulb lightbulb -> handleLightbulbSettings(lightbulb);
@@ -351,6 +335,8 @@ public class DeviceMenu {
     }
 
     private void handleCoffeeMachineSettings(CoffeeMachine coffeeMachine) {
+        ScreenUtils.clearScreen();
+
         System.out.println("\n====> Coffee Machine Settings <=====\n");
 
         System.out.println("[1] Change device name                  ");
@@ -398,7 +384,7 @@ public class DeviceMenu {
     private void toggleDevice(SmartDevice device) {
         ScreenUtils.clearScreen();
 
-        System.out.println("\n=========> Toggle device <==========\n");
+        System.out.println("\n=========> Toggle device <==========");
 
         if (device.isOn()) {
             device.turnOff();
@@ -536,15 +522,17 @@ public class DeviceMenu {
         System.out.println("\n==========> Brew coffee <===========\n");
 
         System.out.printf("Current settings: %s (%s)%n",
-                coffeeMachine.getCoffeeType(),
-                coffeeMachine.getCupSize());
+                coffeeMachine.getCoffeeType(), coffeeMachine.getCupSize());
+
         System.out.printf("Water level: %d%%%n", coffeeMachine.getWaterLevel());
 
         System.out.print("\nStart brewing? (y/n): ");
+
         String input = scanner.nextLine().toLowerCase();
 
         if (input.equals("y")) {
             coffeeMachine.brewCoffee();
+
             if (coffeeMachine.isBrewing()) {
                 System.out.println("\nStarted brewing coffee!");
             }
@@ -560,10 +548,12 @@ public class DeviceMenu {
         System.out.printf("Current water level: %d%%%n", coffeeMachine.getWaterLevel());
 
         System.out.print("\nRefill water to 100%? (y/n): ");
+
         String input = scanner.nextLine().toLowerCase();
 
         if (input.equals("y")) {
             coffeeMachine.refill();
+
             System.out.println("\nWater refilled to 100%");
         }
 
