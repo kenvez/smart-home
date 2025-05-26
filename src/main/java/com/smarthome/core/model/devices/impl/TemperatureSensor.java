@@ -14,6 +14,8 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
     private Double currentTemperature;
     private SensorStatus sensorStatus;
     private final Random random = new Random();
+    private double temperatureThreshold = 25.0; // Default threshold
+    private int updateInterval = 60;
 
     public TemperatureSensor(String name, DeviceStatus status) {
         super(name, status);
@@ -76,6 +78,54 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
         this.currentTemperature = temperature;
 
         notifyObservers();
+    }
+
+    public double getTemperatureThreshold() {
+        return temperatureThreshold;
+    }
+
+    public void setTemperatureThreshold(double threshold) throws IllegalArgumentException {
+        if (threshold < -40 || threshold > 40) {
+            throw new IllegalArgumentException("Temperature threshold must be between -40 and 40 degrees Celsius");
+        }
+
+        double oldThreshold = this.temperatureThreshold;
+        this.temperatureThreshold = threshold;
+
+        notifyObservers();
+
+        if (oldThreshold != threshold && getParentRoom() != null) {
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.SETTINGS_CHANGE,
+                    "Temperature threshold changed from " + oldThreshold + "°C to " + threshold + "°C"
+            );
+        }
+    }
+
+    public int getUpdateInterval() {
+        return updateInterval;
+    }
+
+    public void setUpdateInterval(int interval) throws IllegalArgumentException {
+        if (interval < 1) {
+            throw new IllegalArgumentException("Update interval must be at least 1 second");
+        }
+
+        int oldInterval = this.updateInterval;
+        this.updateInterval = interval;
+
+        notifyObservers();
+
+        if (oldInterval != interval && getParentRoom() != null) {
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.SETTINGS_CHANGE,
+                    "Update interval changed from " + oldInterval + " seconds to " + interval + " seconds"
+            );
+        }
     }
 
     @Override

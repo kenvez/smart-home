@@ -104,6 +104,7 @@ public class DeviceMenu {
         System.out.println("[3] Coffee machine                      ");
         System.out.println("[4] Curtain                             ");
         System.out.println("[5] Door lock                           ");
+        System.out.println("[6] Temperature sensor                  ");
         System.out.println("[b] Back to device menu               \n");
 
         System.out.print("Enter your choice: ");
@@ -210,6 +211,13 @@ public class DeviceMenu {
                 DeviceManagement.getInstance().registerDevice(device);
 
                 System.out.println("\nDoor lock created successfully!");
+            }
+            case '6' -> {
+                device = new TemperatureSensor(name, DeviceStatus.OFF);
+
+                DeviceManagement.getInstance().registerDevice(device);
+
+                System.out.println("\nTemperature sensor created successfully!");
             }
             case 'b' -> System.out.println("Going back to device menu...");
 

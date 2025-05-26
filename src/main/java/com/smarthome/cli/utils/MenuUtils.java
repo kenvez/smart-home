@@ -14,10 +14,9 @@ public class MenuUtils {
         System.out.println("[1] Manage houses                       ");
         System.out.println("[2] Manage rooms                        ");
         System.out.println("[3] Manage devices                      ");
-        System.out.println("[4] Manage sensors                     ");
-        System.out.println("[5] Manage rules                        ");
-        System.out.println("[6] System status                       ");
-        System.out.println("[7] Simulate devices                    ");
+        System.out.println("[4] Manage rules                        ");
+        System.out.println("[5] System status                       ");
+        System.out.println("[6] Simulate devices                    ");
         System.out.println("[q] Quit program                      \n");
 
         System.out.print("Enter your choice: ");
@@ -93,8 +92,6 @@ public class MenuUtils {
         ScreenUtils.clearScreen();
 
         System.out.println("\n==========> Select house <==========\n");
-
-        // TODO implement exception
 
         if (Main.houses.isEmpty()) {
             System.out.println("No houses found! Please add a house first.");
