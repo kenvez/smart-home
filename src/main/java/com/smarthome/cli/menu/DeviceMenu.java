@@ -1,5 +1,6 @@
 package com.smarthome.cli.menu;
 
+import com.smarthome.cli.settings.DeviceSettings;
 import com.smarthome.core.management.DeviceManagement;
 import com.smarthome.core.model.room.Room;
 import com.smarthome.core.model.devices.base.*;
@@ -12,9 +13,11 @@ import java.util.List;
 
 public class DeviceMenu {
     private final Scanner scanner;
+    private final DeviceSettings deviceSettings;
 
     public DeviceMenu(Scanner scanner) {
         this.scanner = scanner;
+        this.deviceSettings = new DeviceSettings(scanner);
     }
 
     public void start() {
@@ -42,7 +45,7 @@ public class DeviceMenu {
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
                 case '4' -> {
-                    deviceSettings();
+                    deviceSettings.start();
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
                 case 'b' -> {
@@ -99,6 +102,7 @@ public class DeviceMenu {
         System.out.println("[1] Lightbulb                           ");
         System.out.println("[2] Outlet                              ");
         System.out.println("[3] Coffee Machine                      ");
+        System.out.println("[4] Curtain                             ");
         System.out.println("[b] Back to device menu");
 
         System.out.print("\nEnter your choice: ");
@@ -263,299 +267,5 @@ public class DeviceMenu {
         System.out.println("\n===========> List rooms <===========\n");
 
         MenuUtils.displayDevicesList(selectedRoom.getDevices());
-    }
-
-    private void deviceSettings() {
-        SelectionResult selection = MenuUtils.performSelection(scanner, true);
-
-        if (selection == null) {
-            return;
-        }
-
-        SmartDevice selectedDevice = selection.getDevice();
-
-        switch (selectedDevice) {
-            case Lightbulb lightbulb -> handleLightbulbSettings(lightbulb);
-            case Outlet outlet -> handleOutletSettings(outlet);
-            case CoffeeMachine coffeeMachine -> handleCoffeeMachineSettings(coffeeMachine);
-            default -> System.out.println("Invalid device type!");
-
-        }
-    }
-
-    private void handleLightbulbSettings(Lightbulb lightbulb) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n=======> Lightbulb settings <=======\n");
-
-        System.out.println("[1] Change device name                  ");
-        System.out.println("[2] Toggle device                       ");
-        System.out.println("[3] Color settings                      ");
-        System.out.println("[b] Back to device menu               \n");
-
-        System.out.print("Enter your choice: ");
-
-        char choice = scanner.next().charAt(0);
-
-        scanner.nextLine();
-
-        switch (choice) {
-            case '1' -> changeName(lightbulb);
-            case '2' -> toggleDevice(lightbulb);
-            case '3' -> colorSettings(lightbulb);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
-        }
-    }
-
-    private void handleOutletSettings(Outlet outlet) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n========> Outlet settings <=========\n");
-
-        System.out.println("[1] Change device name                  ");
-        System.out.println("[2] Toggle device                       ");
-        System.out.println("[3] Toggle in-use status                ");
-        System.out.println("[4] Display current status              ");
-        System.out.println("[b] Back to device menu               \n");
-
-        System.out.print("Enter your choice: ");
-
-        char choice = scanner.next().charAt(0);
-
-        scanner.nextLine();
-
-        switch (choice) {
-            case '1' -> changeName(outlet);
-            case '2' -> toggleDevice(outlet);
-            case '3' -> toggleInUseStatus(outlet);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
-        }
-    }
-
-    private void handleCoffeeMachineSettings(CoffeeMachine coffeeMachine) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n====> Coffee Machine Settings <=====\n");
-
-        System.out.println("[1] Change device name                  ");
-        System.out.println("[2] Toggle device                       ");
-        System.out.println("[3] Select coffee type                  ");
-        System.out.println("[4] Select cup size                     ");
-        System.out.println("[5] Brew coffee                         ");
-        System.out.println("[6] Refill water                        ");
-        System.out.println("[b] Back to device menu                \n");
-
-        System.out.print("Enter your choice: ");
-
-        char choice = scanner.next().charAt(0);
-
-        scanner.nextLine();
-
-        switch (choice) {
-            case '1' -> changeName(coffeeMachine);
-            case '2' -> toggleDevice(coffeeMachine);
-            case '3' -> selectCoffeeType(coffeeMachine);
-            case '4' -> selectCupSize(coffeeMachine);
-            case '5' -> brewCoffee(coffeeMachine);
-            case '6' -> refillWater(coffeeMachine);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
-        }
-
-    }
-
-    private void changeName(SmartDevice device) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n=======> Change device name <=======\n");
-
-        System.out.print("Enter new device name: ");
-
-        String newName = scanner.nextLine();
-
-        device.setName(newName);
-
-        System.out.printf("\n%s name changed successfully!\n",
-                device.getName());
-    }
-
-    private void toggleDevice(SmartDevice device) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n=========> Toggle device <==========");
-
-        if (device.isOn()) {
-            device.turnOff();
-            System.out.println("\nDevice turned off!");
-        } else {
-            device.turnOn();
-            System.out.println("\nDevice turned on!");
-        }
-    }
-
-    private void colorSettings(Lightbulb lightbulb) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n========> Color settings <==========\n");
-
-        try {
-            System.out.printf("Current settings: Hue = %.1f, Saturation = %" +
-                    ".2f, Value = %.2f%n", lightbulb.getHue(),
-                    lightbulb.getSaturation(), lightbulb.getValue());
-
-            System.out.print("\nEnter new hue(0-359, press Enter to skip): ");
-
-            String hueInput = scanner.nextLine();
-
-            if (!hueInput.isEmpty()) {
-                double hue = Double.parseDouble(hueInput);
-
-                lightbulb.setHue(hue);
-            }
-
-            System.out.print("Enter new saturation(0-1, press Enter to skip): ");
-
-            String saturationInput = scanner.nextLine();
-
-            if (!saturationInput.isEmpty()) {
-                double saturation = Double.parseDouble(saturationInput);
-
-                lightbulb.setSaturation(saturation);
-            }
-
-            System.out.print("Enter new value(0-1, press Enter to skip): ");
-
-            String valueInput = scanner.nextLine();
-
-            if (!valueInput.isEmpty()) {
-                double value = Double.parseDouble(valueInput);
-
-                lightbulb.setValue(value);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("\nInvalid number format!");
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nError: " + e.getMessage());
-        }
-    }
-
-    private void toggleInUseStatus(Outlet outlet) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n======> Toggle in-use status <======\n");
-
-        System.out.println("Current in-use status: " + outlet.isInUse());
-        System.out.print("\nToggle in-use status? (y/n): ");
-
-        char choice = scanner.next().charAt(0);
-
-        if (choice == 'y') {
-            outlet.setInUse(!outlet.isInUse());
-
-            System.out.println("\nIn-use status changed to: " + outlet.isInUse());
-        }
-    }
-
-    private void selectCoffeeType(CoffeeMachine coffeeMachine) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n=======> Select coffee type <========\n");
-
-        CoffeeType[] types = CoffeeType.values();
-
-        for (int i = 0; i < types.length; i++) {
-            System.out.printf("[%d] %s%n", i + 1, types[i]);
-        }
-
-        System.out.print("\nEnter your choice: ");
-
-        try {
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            if (choice > 0 && choice <= types.length) {
-                coffeeMachine.setCoffeeType(types[choice - 1]);
-
-                System.out.println("\nCoffee type changed to: " + types[choice - 1]);
-            } else {
-                System.out.println("\nInvalid choice!");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("\nPlease enter a valid number.");
-        }
-
-    }
-
-    private void selectCupSize(CoffeeMachine coffeeMachine) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n========> Select cup size <=========\n");
-
-        CupSize[] sizes = CupSize.values();
-
-        for (int i = 0; i < sizes.length; i++) {
-            System.out.printf("[%d] %s%n", i + 1, sizes[i]);
-        }
-
-        System.out.print("\nEnter your choice: ");
-
-        try {
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            if (choice > 0 && choice <= sizes.length) {
-                coffeeMachine.setCupSize(sizes[choice - 1]);
-
-                System.out.println("\nCup size changed to: " + sizes[choice - 1]);
-            } else {
-                System.out.println("\nInvalid choice!");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("\nPlease enter a valid number.");
-        }
-
-    }
-
-    private void brewCoffee(CoffeeMachine coffeeMachine) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n==========> Brew coffee <===========\n");
-
-        System.out.printf("Current settings: %s (%s)%n",
-                coffeeMachine.getCoffeeType(), coffeeMachine.getCupSize());
-
-        System.out.printf("Water level: %d%%%n", coffeeMachine.getWaterLevel());
-
-        System.out.print("\nStart brewing? (y/n): ");
-
-        String input = scanner.nextLine().toLowerCase();
-
-        if (input.equals("y")) {
-            coffeeMachine.brewCoffee();
-
-            if (coffeeMachine.isBrewing()) {
-                System.out.println("\nStarted brewing coffee!");
-            }
-        }
-
-    }
-
-    private void refillWater(CoffeeMachine coffeeMachine) {
-        ScreenUtils.clearScreen();
-
-        System.out.println("\n==========> Refill water <==========\n");
-
-        System.out.printf("Current water level: %d%%%n", coffeeMachine.getWaterLevel());
-
-        System.out.print("\nRefill water to 100%? (y/n): ");
-
-        String input = scanner.nextLine().toLowerCase();
-
-        if (input.equals("y")) {
-            coffeeMachine.refill();
-
-            System.out.println("\nWater refilled to 100%");
-        }
-
     }
 }
