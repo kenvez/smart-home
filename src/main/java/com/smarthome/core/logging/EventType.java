@@ -13,4 +13,5 @@ public enum EventType {
     INFO,
     DEBUG,
     TRACE,
+    SETTINGS_CHANGE
 }
