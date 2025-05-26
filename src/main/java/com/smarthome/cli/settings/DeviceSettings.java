@@ -15,6 +15,7 @@ public class DeviceSettings {
     private final OutletSettings outletSettings;
     private final CoffeeMachineSettings coffeeMachineSettings;
     private final CurtainSettings curtainSettings;
+    private final DoorLockSettings doorLockSettings;
 
     public DeviceSettings(Scanner scanner) {
         this.scanner = scanner;
@@ -22,6 +23,7 @@ public class DeviceSettings {
         this.outletSettings = new OutletSettings(scanner, this);
         this.coffeeMachineSettings = new CoffeeMachineSettings(scanner, this);
         this.curtainSettings = new CurtainSettings(scanner, this);
+        this.doorLockSettings = new DoorLockSettings(scanner, this);
     }
 
     public void start() {
@@ -38,6 +40,7 @@ public class DeviceSettings {
             case Outlet outlet -> outletSettings.start(outlet);
             case CoffeeMachine coffeeMachine -> coffeeMachineSettings.start(coffeeMachine);
             case Curtain curtain -> curtainSettings.start(curtain);
+            case DoorLock doorLock -> doorLockSettings.start(doorLock);
             default -> System.out.println("Invalid device type!");
 
         }

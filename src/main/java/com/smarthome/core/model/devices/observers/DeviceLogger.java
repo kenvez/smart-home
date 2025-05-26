@@ -12,6 +12,6 @@ public class DeviceLogger implements DeviceObserver {
     @Override
     public void update(SmartDevice device) {
         String timestamp = LocalDateTime.now().format(formatter);
-        System.out.println("[" + timestamp + "] Device event: " + device.getName() + " - Status: " + device.getStatus());
+        System.out.println("\n[" + timestamp + "] Device event: " + device.getName() + " - Status: " + device.getStatus());
     }
 }

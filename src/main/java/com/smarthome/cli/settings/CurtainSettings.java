@@ -46,6 +46,10 @@ public class CurtainSettings {
     }
 
     private void openCurtainFully(Curtain curtain) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n========> Curtain settings <========\n");
+
         if (!curtain.isOn()) {
             System.out.println("Cannot open curtain while device is OFF.");
             return;
@@ -53,10 +57,14 @@ public class CurtainSettings {
 
         curtain.openFully();
 
-        System.out.println("Curtain opened fully (100%).");
+        System.out.println("\nCurtain opened fully (100%).");
     }
 
     private void closeCurtainFully(Curtain curtain) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n========> Curtain settings <========\n");
+
         if (!curtain.isOn()) {
             System.out.println("Cannot close curtain while device is OFF.");
             return;
@@ -68,6 +76,10 @@ public class CurtainSettings {
     }
 
     private void setCurtainOpenness(Curtain curtain) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n========> Curtain settings <========\n");
+
         if (!curtain.isOn()) {
             System.out.println("Cannot adjust curtain while device is OFF.");
             return;
@@ -87,6 +99,10 @@ public class CurtainSettings {
     }
 
     private void toggleCurtainAutomatic(Curtain curtain) {
+        ScreenUtils.clearScreen();
+
+        System.out.println("\n========> Curtain settings <========\n");
+
         boolean newState = !curtain.isAutomatic();
 
         curtain.setAutomatic(newState);

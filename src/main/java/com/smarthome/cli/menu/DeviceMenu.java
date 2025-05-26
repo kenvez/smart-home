@@ -101,11 +101,12 @@ public class DeviceMenu {
 
         System.out.println("[1] Lightbulb                           ");
         System.out.println("[2] Outlet                              ");
-        System.out.println("[3] Coffee Machine                      ");
+        System.out.println("[3] Coffee machine                      ");
         System.out.println("[4] Curtain                             ");
-        System.out.println("[b] Back to device menu");
+        System.out.println("[5] Door lock                           ");
+        System.out.println("[b] Back to device menu               \n");
 
-        System.out.print("\nEnter your choice: ");
+        System.out.print("Enter your choice: ");
 
         char type = scanner.next().charAt(0);
 
@@ -132,7 +133,7 @@ public class DeviceMenu {
 
                     System.out.println("Enter color settings (or press Enter to use defaults).");
 
-                    System.out.print("\nHue [0-359, default: 30]: ");
+                    System.out.print("\nHue (0-359, default: 30): ");
 
                     String hueInput = scanner.nextLine();
 
@@ -142,7 +143,7 @@ public class DeviceMenu {
                         lightbulb.setHue(hue);
                     }
 
-                    System.out.print("Saturation [0-1, default: 0.01]: ");
+                    System.out.print("Saturation (0-1, default: 0.01): ");
 
                     String saturationInput = scanner.nextLine();
 
@@ -152,7 +153,7 @@ public class DeviceMenu {
                         lightbulb.setSaturation(saturation);
                     }
 
-                    System.out.print("Value [0-1, default: 0.98]: ");
+                    System.out.print("Value (0-1, default: 0.98): ");
 
                     String valueInput = scanner.nextLine();
 
@@ -202,6 +203,13 @@ public class DeviceMenu {
                 DeviceManagement.getInstance().registerDevice(device);
 
                 System.out.println("\nCurtain created successfully!");
+            }
+            case '5' -> {
+                device = new DoorLock(name, DeviceStatus.OFF);
+
+                DeviceManagement.getInstance().registerDevice(device);
+
+                System.out.println("\nDoor lock created successfully!");
             }
             case 'b' -> System.out.println("Going back to device menu...");
 

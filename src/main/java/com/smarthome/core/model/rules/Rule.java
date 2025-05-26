@@ -2,66 +2,69 @@ package com.smarthome.core.model.rules;
 
 import com.smarthome.core.model.devices.base.SmartDevice;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class Rule<T extends SmartDevice, U extends SmartDevice> {
-    private final String id;
-    private final T conditionDevice;
-    private final U actionDevice;
-    private final Predicate<T> condition;
-    private final Consumer<U> action;
-    private String name;
 
-    public Rule(String name, T conditionDevice, U actionDevice, Predicate<T> condition, Consumer<U> action) {
-        this.id = UUID.randomUUID().toString();
-        this.name = name;
+public class Rule<T extends SmartDevice, U extends SmartDevice> {
+    private final T conditionDevice;
+    private final Predicate<T> condition;
+    private final U actionDevice;
+    private final Consumer<U> action;
+    private String description;
+
+
+    public Rule(T conditionDevice, Predicate<T> condition, U actionDevice,
+                Consumer<U> action, String description) {
         this.conditionDevice = conditionDevice;
-        this.actionDevice = actionDevice;
         this.condition = condition;
+        this.actionDevice = actionDevice;
         this.action = action;
+        this.description = description;
+    }
+
+    public Rule(T conditionDevice, Predicate<T> condition, U actionDevice,
+                Consumer<U> action) {
+        this.conditionDevice = conditionDevice;
+        this.condition = condition;
+        this.actionDevice = actionDevice;
+        this.action = action;
+        this.description = "";
     }
 
     public boolean checkCondition() {
-        return this.condition.test(this.conditionDevice);
+        return condition.test(conditionDevice);
     }
 
     public boolean execute() {
         if (checkCondition()) {
-            action.accept(this.actionDevice);
+            action.accept(actionDevice);
             return true;
         }
-
         return false;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) throws IllegalArgumentException {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Rule name cannot be null or empty");
-        }
-
-        this.name = name;
-    }
-
     public T getConditionDevice() {
-        return this.conditionDevice;
+        return conditionDevice;
     }
 
     public U getActionDevice() {
-        return this.actionDevice;
+        return actionDevice;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
     public String toString() {
-        return "Rule: " + name + " (if condition on " + conditionDevice.getName() + ", then action on " + actionDevice.getName() + ")";
+        return description.isEmpty()
+                ? "If condition on " + conditionDevice.getName() + " then action on " + actionDevice.getName()
+                : description;
     }
+
 }

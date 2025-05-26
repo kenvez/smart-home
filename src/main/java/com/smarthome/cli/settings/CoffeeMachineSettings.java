@@ -73,7 +73,6 @@ public class CoffeeMachineSettings {
         } catch (NumberFormatException e) {
             System.out.println("\nPlease enter a valid number.");
         }
-
     }
 
     private void selectCupSize(CoffeeMachine coffeeMachine) {

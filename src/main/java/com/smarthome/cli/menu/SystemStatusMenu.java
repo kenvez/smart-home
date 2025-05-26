@@ -155,6 +155,8 @@ public class SystemStatusMenu {
     }
 
     private void displayRoomsStatus() {
+        ScreenUtils.clearScreen();
+
         System.out.println("\n==========> Rooms status <==========\n");
 
         if (Main.houses.isEmpty()) {

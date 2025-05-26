@@ -2,10 +2,7 @@ package com.smarthome.core.model.devices.impl;
 
 import com.smarthome.core.logging.EventLogger;
 import com.smarthome.core.logging.EventType;
-import com.smarthome.core.model.devices.base.DeviceStatus;
-import com.smarthome.core.model.devices.base.LockStatus;
-import com.smarthome.core.model.devices.base.SmartDevice;
-import com.smarthome.core.model.devices.base.Switchable;
+import com.smarthome.core.model.devices.base.*;
 
 public class DoorLock extends SmartDevice implements Switchable {
     private LockStatus lockStatus;
@@ -29,7 +26,7 @@ public class DoorLock extends SmartDevice implements Switchable {
 
     public boolean lock() {
         if (!isOn()) {
-            System.out.println("Cannot lock door - device is OFF");
+            System.out.println("Cannot lock door, device is off");
             return false;
         }
 
