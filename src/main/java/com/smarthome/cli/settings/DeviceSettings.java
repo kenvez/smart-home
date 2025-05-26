@@ -4,9 +4,8 @@ import com.smarthome.cli.utils.MenuUtils;
 import com.smarthome.cli.utils.ScreenUtils;
 import com.smarthome.cli.utils.SelectionResult;
 import com.smarthome.core.model.devices.base.SmartDevice;
-import com.smarthome.core.model.devices.impl.CoffeeMachine;
-import com.smarthome.core.model.devices.impl.Lightbulb;
-import com.smarthome.core.model.devices.impl.Outlet;
+import com.smarthome.core.model.devices.impl.*;
+
 
 import java.util.Scanner;
 
@@ -15,12 +14,14 @@ public class DeviceSettings {
     private final LightbulbSettings lightbulbSettings;
     private final OutletSettings outletSettings;
     private final CoffeeMachineSettings coffeeMachineSettings;
+    private final CurtainSettings curtainSettings;
 
     public DeviceSettings(Scanner scanner) {
         this.scanner = scanner;
         this.lightbulbSettings = new LightbulbSettings(scanner, this);
         this.outletSettings = new OutletSettings(scanner, this);
         this.coffeeMachineSettings = new CoffeeMachineSettings(scanner, this);
+        this.curtainSettings = new CurtainSettings(scanner, this);
     }
 
     public void start() {
@@ -36,6 +37,7 @@ public class DeviceSettings {
             case Lightbulb lightbulb -> lightbulbSettings.start(lightbulb);
             case Outlet outlet -> outletSettings.start(outlet);
             case CoffeeMachine coffeeMachine -> coffeeMachineSettings.start(coffeeMachine);
+            case Curtain curtain -> curtainSettings.start(curtain);
             default -> System.out.println("Invalid device type!");
 
         }

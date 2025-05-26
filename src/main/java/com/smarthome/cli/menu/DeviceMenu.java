@@ -196,6 +196,13 @@ public class DeviceMenu {
 
                 System.out.println("\nCoffee machine created successfully!");
             }
+            case '4' -> {
+                device = new Curtain(name, DeviceStatus.OFF);
+
+                DeviceManagement.getInstance().registerDevice(device);
+
+                System.out.println("\nCurtain created successfully!");
+            }
             case 'b' -> System.out.println("Going back to device menu...");
 
             default -> {

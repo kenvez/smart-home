@@ -10,6 +10,7 @@ public class CLI {
     private final HouseMenu houseMenu;
     private final RoomMenu roomMenu;
     private final DeviceMenu deviceMenu;
+    private final SensorMenu sensorMenu;
     private final RuleMenu ruleMenu;
     private final SystemStatusMenu systemStatusMenu;
     private final SimulateDevicesMenu simulateDevicesMenu;
@@ -19,6 +20,7 @@ public class CLI {
         this.houseMenu = new HouseMenu(scanner);
         this.roomMenu = new RoomMenu(scanner);
         this.deviceMenu = new DeviceMenu(scanner);
+        this.sensorMenu = new SensorMenu(scanner);
         this.ruleMenu = new RuleMenu(scanner);
         this.systemStatusMenu = new SystemStatusMenu(scanner);
         this.simulateDevicesMenu = new SimulateDevicesMenu(scanner);
@@ -39,9 +41,10 @@ public class CLI {
                 case '1' -> houseMenu.start();
                 case '2' -> roomMenu.start();
                 case '3' -> deviceMenu.start();
-                case '4' -> ruleMenu.start();
-                case '5' -> systemStatusMenu.start();
-                case '6' -> simulateDevicesMenu.start();
+                case '4' -> sensorMenu.start();
+                case '5' -> ruleMenu.start();
+                case '6' -> systemStatusMenu.start();
+                case '7' -> simulateDevicesMenu.start();
                 case 'q' -> {
                     System.out.println("\nQuiting program.");
                     ScreenUtils.pressEnterToContinue(scanner);
