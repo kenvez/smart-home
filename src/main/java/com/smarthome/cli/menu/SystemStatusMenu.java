@@ -2,13 +2,12 @@ package com.smarthome.cli.menu;
 
 import com.smarthome.cli.utils.ScreenUtils;
 import com.smarthome.core.Main;
-import com.smarthome.core.management.DeviceManagement;
 import com.smarthome.core.model.devices.base.SmartDevice;
+import com.smarthome.core.model.devices.impl.TemperatureSensor;
 import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SystemStatusMenu {
     private final Scanner scanner;
@@ -49,10 +48,6 @@ public class SystemStatusMenu {
                     displaySensorsStatus();
                     ScreenUtils.pressEnterToContinue(scanner);
                 }
-                case '6' -> {
-                    displayRulesStatus();
-                    ScreenUtils.pressEnterToContinue(scanner);
-                }
                 case 'b' -> {
                     System.out.println("\nGoing back to main menu.");
                     ScreenUtils.pressEnterToContinue(scanner);
@@ -73,7 +68,6 @@ public class SystemStatusMenu {
         System.out.println("[3] Rooms status               ");
         System.out.println("[4] Devices status             ");
         System.out.println("[5] Sensors status             ");
-        System.out.println("[6] Rules status               ");
         System.out.println("[b] Back to main menu                \n");
 
         System.out.print("Enter your choice: ");
@@ -168,7 +162,7 @@ public class SystemStatusMenu {
             System.out.printf("House: %s%n", house.getName());
 
             if (house.getRooms().isEmpty()) {
-                System.out.println("No rooms found in this house.");
+                System.out.println("\tNo rooms found in this house.");
 
                 continue;
             }
@@ -198,7 +192,7 @@ public class SystemStatusMenu {
         List<SmartDevice> allDevices = getAllDevices();
 
         if (allDevices.isEmpty()) {
-            System.out.println("No devices found in the system.");
+            System.out.println("\tNo devices found in the system.");
 
             return;
         }
@@ -224,7 +218,7 @@ public class SystemStatusMenu {
         System.out.println("\nInactive Devices (" + offDevices.size() + "):");
 
         if (offDevices.isEmpty()) {
-            System.out.println("No inactive devices.");
+            System.out.println("\tNo inactive devices.");
         } else {
             for (SmartDevice device : offDevices) {
                 System.out.printf("- %s (%s): OFF\n", device.getName(), device.getClass().getSimpleName());
@@ -239,17 +233,57 @@ public class SystemStatusMenu {
 
         System.out.println("\n=========> Sensors status <=========\n");
 
-        System.out.println("Sensor status display is not yet implemented.");
-        System.out.println("This feature will be available in a future update.");
-    }
+        if (Main.houses.isEmpty()) {
+            System.out.println("No houses found in the system.");
+            return;
+        }
 
-    private void displayRulesStatus() {
-        ScreenUtils.clearScreen();
+        boolean foundSensors = false;
 
-        System.out.println("\n==========> Rules status <==========\n");
+        // Iterate through houses and rooms to find all temperature sensors
+        for (House house : Main.houses) {
+            boolean housePrinted = false;
 
-        System.out.println("Rule status display is not yet implemented.");
-        System.out.println("This feature will be available in a future update.");
+            for (Room room : house.getRooms()) {
+                List<TemperatureSensor> sensors = room.getDevices().stream()
+                        .filter(device -> device instanceof TemperatureSensor)
+                        .map(device -> (TemperatureSensor) device)
+                        .toList();
+
+                if (!sensors.isEmpty()) {
+                    if (!housePrinted) {
+                        System.out.println("House: " + house.getName());
+                        housePrinted = true;
+                        foundSensors = true;
+                    }
+
+                    System.out.println("\tRoom: " + room.getName());
+
+                    for (TemperatureSensor sensor : sensors) {
+                        System.out.println("    * " + sensor.getName() + " (" +
+                                (sensor.isOn() ? "ON" : "OFF") + ")");
+
+                        Double reading = sensor.readValue();
+
+                        System.out.println("\t\tCurrent temperature: " +
+                                (reading != null ? String.format("%.1f%s", reading, sensor.getUnit()) :
+                                        "Unavailable (device is off)"));
+
+                        System.out.println("\t\tStatus: " + sensor.getSensorStatus());
+                        System.out.println("\t\tThreshold: " + sensor.getTemperatureThreshold() + "°C");
+                        System.out.println("\t\tUpdate interval: " + sensor.getUpdateInterval() + " seconds");
+
+                        System.out.println();
+                    }
+                }
+            }
+        }
+
+
+        if (!foundSensors) {
+            System.out.println("No sensors found in any house.");
+        }
+
     }
 
     private List<SmartDevice> getAllDevices() {

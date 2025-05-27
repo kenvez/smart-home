@@ -4,6 +4,7 @@ import com.smarthome.core.logging.EventLogger;
 import com.smarthome.core.logging.EventType;
 import com.smarthome.core.model.room.Room;
 import com.smarthome.core.model.rules.Rule;
+import com.smarthome.core.model.rules.RuleExecutor;
 
 import java.util.*;
 
@@ -90,6 +91,20 @@ public abstract class SmartDevice implements Switchable, ObservableDevice {
         for (DeviceObserver observer : observers) {
             observer.update(this);
         }
+
+        if (!rules.isEmpty()) {
+            int executedRules = RuleExecutor.executeRulesForDevice(this);
+
+            if (executedRules > 0 && parentRoom != null) {
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        parentRoom,
+                        EventType.RULE_EXECUTED,
+                        "Device state change triggered " + executedRules + " rule(s)"
+                );
+            }
+        }
+
     }
 
     @Override

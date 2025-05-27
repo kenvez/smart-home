@@ -40,8 +40,8 @@ public class DoorLockSettings {
             case '4' -> unlockDoor(doorLock);
             case '5' -> changePinCode(doorLock);
             case '6' -> toggleAutoLock(doorLock);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
+            case 'b' -> System.out.println("\nGoing back to main menu.");
+            default -> System.out.println("\nInvalid choice!");
         }
     }
 

@@ -35,7 +35,7 @@ public class OutletSettings {
             case '1' -> deviceSettings.changeName(outlet);
             case '2' -> deviceSettings.toggleDevice(outlet);
             case '3' -> toggleInUseStatus(outlet);
-            case 'b' -> System.out.println("Going back to device menu...");
+            case 'b' -> System.out.println("\nGoing back to main menu.");
             default -> System.out.println("Invalid choice!");
         }
     }

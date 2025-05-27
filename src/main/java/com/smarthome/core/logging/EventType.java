@@ -7,7 +7,9 @@ public enum EventType {
     DEVICE_REMOVED,
     RULE_ADDED,
     RULE_REMOVED,
+    RULE_EXECUTED,
     SIMULATION,
     WARNING,
-    ERROR
+    ERROR,
+    GROUP_CONTROL
 }

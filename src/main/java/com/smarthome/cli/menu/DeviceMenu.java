@@ -219,10 +219,11 @@ public class DeviceMenu {
 
                 System.out.println("\nTemperature sensor created successfully!");
             }
-            case 'b' -> System.out.println("Going back to device menu...");
+            case 'b' -> System.out.println("\nGoing back to main menu.");
 
             default -> {
-                System.out.println("Invalid device type selection!");
+                System.out.println("\nInvalid device type selection!");
+
                 return;
             }
         }

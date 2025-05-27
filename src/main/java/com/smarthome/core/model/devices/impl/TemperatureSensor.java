@@ -2,7 +2,6 @@ package com.smarthome.core.model.devices.impl;
 
 import com.smarthome.core.model.devices.base.*;
 import com.smarthome.core.logging.*;
-import jdk.jfr.Event;
 
 import java.util.Random;
 
@@ -113,8 +112,6 @@ public class TemperatureSensor extends SmartDevice implements SensorDevice<Doubl
     @Override
     public void setStatus(DeviceStatus status) {
         super.setStatus(status);
-
-        notifyObservers();
 
         if (status == DeviceStatus.OFF) {
             setSensorStatus(SensorStatus.ACTIVE);

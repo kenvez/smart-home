@@ -50,16 +50,4 @@ public class LogEvent {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
-
-    public String getDeviceType() {
-        return deviceType;
-    }
-
-    public String getRoomName() {
-        return roomName;
-    }
-
-    public EventType getEventType() {
-        return eventType;
-    }
 }

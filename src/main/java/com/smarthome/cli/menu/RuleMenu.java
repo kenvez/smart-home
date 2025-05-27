@@ -84,7 +84,7 @@ public class RuleMenu {
 
         SmartDevice conditionDevice = conditionSelection.device();
 
-        Predicate<SmartDevice> condition = createConditionForDevice(conditionDevice);
+        Predicate<SmartDevice> condition = createConditionForDevice();
 
         System.out.println("\nSelect the device for the action");
 
@@ -97,7 +97,7 @@ public class RuleMenu {
 
         SmartDevice actionDevice = actionSelection.device();
 
-        Consumer<SmartDevice> action = createActionForDevice(actionDevice);
+        Consumer<SmartDevice> action = createActionForDevice();
 
         System.out.print("\nEnter a description for this rule (or leave empty" +
                 " for auto-description): ");
@@ -250,7 +250,7 @@ public class RuleMenu {
 
                 if (roomHasRules) {
                     houseHasRules = true;
-                    System.out.print(roomRules.toString());
+                    System.out.print(roomRules);
                     totalRules += roomRuleCount;
                 }
             }
@@ -271,7 +271,7 @@ public class RuleMenu {
         }
     }
 
-    private Predicate<SmartDevice> createConditionForDevice(SmartDevice device) {
+    private Predicate<SmartDevice> createConditionForDevice() {
         ScreenUtils.clearScreen();
 
         System.out.println("\n=====> Select condition type <======\n");
@@ -297,7 +297,7 @@ public class RuleMenu {
         };
     }
 
-    private Consumer<SmartDevice> createActionForDevice(SmartDevice device) {
+    private Consumer<SmartDevice> createActionForDevice() {
         ScreenUtils.clearScreen();
 
         System.out.println("\n=======> Select action type <=======\n");

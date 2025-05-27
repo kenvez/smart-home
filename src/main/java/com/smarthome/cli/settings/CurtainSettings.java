@@ -40,8 +40,8 @@ public class CurtainSettings {
             case '4' -> closeCurtainFully(curtain);
             case '5' -> setCurtainOpenness(curtain);
             case '6' -> toggleCurtainAutomatic(curtain);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
+            case 'b' -> System.out.println("\nGoing back to device menu.");
+            default -> System.out.println("\nInvalid choice!");
         }
     }
 

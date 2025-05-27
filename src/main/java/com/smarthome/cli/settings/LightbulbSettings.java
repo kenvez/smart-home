@@ -34,8 +34,8 @@ public class LightbulbSettings{
             case '1' -> deviceSettings.changeName(lightbulb);
             case '2' -> deviceSettings.toggleDevice(lightbulb);
             case '3' -> colorSettings(lightbulb);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
+            case 'b' -> System.out.println("\nGoing back to main menu.");
+            default -> System.out.println("\nInvalid choice!");
         }
     }
 

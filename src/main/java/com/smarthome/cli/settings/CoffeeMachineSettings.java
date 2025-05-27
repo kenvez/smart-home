@@ -42,8 +42,8 @@ public class CoffeeMachineSettings {
             case '4' -> selectCupSize(coffeeMachine);
             case '5' -> brewCoffee(coffeeMachine);
             case '6' -> refillWater(coffeeMachine);
-            case 'b' -> System.out.println("Going back to device menu...");
-            default -> System.out.println("Invalid choice!");
+            case 'b' -> System.out.println("\nGoing back to main menu.");
+            default -> System.out.println("\nInvalid choice!");
         }
     }
 
