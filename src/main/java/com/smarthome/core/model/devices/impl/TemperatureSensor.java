@@ -6,9 +6,10 @@ import com.smarthome.core.logging.*;
 import java.util.Random;
 
 public class TemperatureSensor extends SmartDevice implements SensorDevice<Double> {
+    private final Random random = new Random();
+
     private SensorStatus sensorStatus;
     private double currentTemperature;
-    private static final Random random = new Random();
     private double temperatureThreshold = 25.0;
     private int updateInterval = 60;
 

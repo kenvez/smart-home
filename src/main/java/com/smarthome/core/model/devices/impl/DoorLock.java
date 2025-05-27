@@ -12,7 +12,6 @@ public class DoorLock extends SmartDevice implements Switchable {
     private LockStatus lockStatus;
     private String pinCode;
     private boolean autoLockEnabled;
-    private boolean isLocked;
     private int batteryLevel;
 
     public DoorLock(String name, DeviceStatus status) {
@@ -20,10 +19,6 @@ public class DoorLock extends SmartDevice implements Switchable {
         this.lockStatus = LockStatus.LOCKED;
         this.pinCode = "1234";
         this.autoLockEnabled = false;
-    }
-
-    public LockStatus getLockStatus() {
-        return lockStatus;
     }
 
     public void setLockStatus(LockStatus lockStatus) {
@@ -156,7 +151,6 @@ public class DoorLock extends SmartDevice implements Switchable {
 
     @Override
     public void simulate() {
-        boolean previousPowerState = isOn();
         boolean previousAutoLock = autoLockEnabled;
         int previousBattery = batteryLevel;
         LockStatus previousLockStatus = lockStatus;

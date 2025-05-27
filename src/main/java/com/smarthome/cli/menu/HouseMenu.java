@@ -78,17 +78,41 @@ public class HouseMenu {
 
         String name = scanner.next();
 
+        scanner.nextLine();
+
         if (Main.houses.stream()
                 .anyMatch(house -> house.getName().equalsIgnoreCase(name))) {
             System.out.println("A house with this name already exists!");
             return;
         }
 
-        System.out.print("Enter house latitude: ");
-        double latitude = scanner.nextDouble();
 
-        System.out.print("Enter house longitude: ");
-        double longitude = scanner.nextDouble();
+        System.out.print("Enter house latitude: ");
+
+        double latitude;
+        double longitude;
+
+        try {
+            String latitudeStr = scanner.next().replace(',', '.');
+
+            scanner.nextLine();
+
+            latitude = Double.parseDouble(latitudeStr);
+        } catch (NumberFormatException e) {
+            System.out.println("\nInvalid house latitude! Please enter a valid number.");
+            return;
+        }
+
+        try {
+            String longitudeStr = scanner.next().replace(',', '.');
+
+            scanner.nextLine();
+
+            longitude = Double.parseDouble(longitudeStr);
+        } catch (NumberFormatException e) {
+            System.out.println("\nInvalid house latitude! Please enter a valid number.");
+            return;
+        }
 
         ScreenUtils.clearScreen();
 
