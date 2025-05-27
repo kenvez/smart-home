@@ -6,7 +6,11 @@ import com.smarthome.core.model.devices.base.DeviceStatus;
 import com.smarthome.core.model.devices.base.SmartDevice;
 import com.smarthome.core.model.devices.base.Switchable;
 
+import java.util.Random;
+
 public class Curtain extends SmartDevice implements Switchable {
+    private final Random random = new Random();
+
     private int opennessPercentage;
     private boolean automatic;
 
@@ -14,10 +18,6 @@ public class Curtain extends SmartDevice implements Switchable {
         super(name, status);
         this.opennessPercentage = 0;
         this.automatic = false;
-    }
-
-    public int getOpennessPercentage() {
-        return this.opennessPercentage;
     }
 
     public void setOpennessPercentage(int percentage) throws IllegalArgumentException {
@@ -49,7 +49,6 @@ public class Curtain extends SmartDevice implements Switchable {
     public void setAutomatic(boolean automatic) {
         this.automatic = automatic;
 
-        // Log the event
         EventLogger.getInstance().logDeviceEvent(
                 this,
                 getParentRoom(),
@@ -64,31 +63,32 @@ public class Curtain extends SmartDevice implements Switchable {
         if (isOn()) {
             setOpennessPercentage(100);
         }
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "Curtain opened fully, current openness: " + opennessPercentage + "%"
+        );
     }
 
     public void closeFully() {
         if (isOn()) {
             setOpennessPercentage(0);
         }
-    }
 
-    public void toggle() {
-        if (!isOn()) {
-            return;
-        }
-
-        if (opennessPercentage == 100) {
-            closeFully();
-        } else {
-            openFully();
-        }
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "Curtain closed fully, current openness: " + opennessPercentage + "%"
+        );
     }
 
     @Override
     public void turnOn() {
         setStatus(DeviceStatus.ON);
 
-        // Log the event
         EventLogger.getInstance().logDeviceEvent(
                 this,
                 getParentRoom(),
@@ -101,7 +101,6 @@ public class Curtain extends SmartDevice implements Switchable {
     public void turnOff() {
         setStatus(DeviceStatus.OFF);
 
-        // Log the event
         EventLogger.getInstance().logDeviceEvent(
                 this,
                 getParentRoom(),
@@ -117,28 +116,68 @@ public class Curtain extends SmartDevice implements Switchable {
 
     @Override
     public void simulate() {
-        if (!isOn() || !automatic) {
-            return;
+        boolean previousPowerState = isOn();
+        int previousOpennessPercentage = opennessPercentage;
+        boolean previousAutomatic = automatic;
+
+        if (!isOn()) {
+            if (random.nextDouble() < 0.3) {
+                turnOn();
+
+                System.out.println("Curtain " + getName() + " turned ON");
+            } else {
+                System.out.println("Curtain " + getName() + " remains OFF");
+
+                return;
+            }
         }
 
-        int hour = java.time.LocalTime.now().getHour();
+        if (random.nextDouble() < 0.2) {
+            boolean newAutomatic = !automatic;
+            setAutomatic(newAutomatic);
+            System.out.println("Curtain " + getName() + " automatic mode changed from " +
+                    (previousAutomatic ? "ON" : "OFF") + " to " +
+                    (newAutomatic ? "ON" : "OFF"));
+        }
 
-        if (hour >= 7 && hour < 19) {
-            if (opennessPercentage < 100) {
-                setOpennessPercentage(Math.min(100, opennessPercentage + 10));
+        if (isOn()) {
+            int action = random.nextInt(3);
+            int newOpennessPercentage;
+
+            switch (action) {
+                case 0 -> {
+                    newOpennessPercentage = opennessPercentage + random.nextInt(30) + 10;
+                    newOpennessPercentage = Math.min(100, newOpennessPercentage);
+                }
+                case 1 -> {
+                    newOpennessPercentage = opennessPercentage - random.nextInt(30) - 10;
+                    newOpennessPercentage = Math.max(0, newOpennessPercentage);
+                }
+                case 2 -> newOpennessPercentage = random.nextInt(101);
+                default -> newOpennessPercentage = opennessPercentage;
             }
-        } else {
-            if (opennessPercentage > 0) {
-                setOpennessPercentage(Math.max(0, opennessPercentage - 10));
+
+            if (newOpennessPercentage != previousOpennessPercentage) {
+                opennessPercentage = newOpennessPercentage;
+
+                System.out.println("Curtain " + getName() + " position changed from " +
+                        previousOpennessPercentage + "% open to " + opennessPercentage + "% open");
+
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.SIMULATION,
+                        "Simulated openness change: " + previousOpennessPercentage + "% -> " + opennessPercentage + "%"
+                );
+
+                notifyObservers();
             }
         }
 
-        EventLogger.getInstance().logDeviceEvent(
-                this,
-                getParentRoom(),
-                EventType.SIMULATION,
-                "Curtain automatic adjustment - current openness: " + opennessPercentage + "%"
-        );
+        if (isOn() && !previousPowerState && random.nextDouble() < 0.1) {
+            turnOff();
+
+            System.out.println("Curtain " + getName() + " turned OFF at the end of simulation");
+        }
     }
-
 }

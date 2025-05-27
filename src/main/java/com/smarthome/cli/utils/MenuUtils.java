@@ -211,7 +211,7 @@ public class MenuUtils {
             if (choice > 0 && choice <= devices.size()) {
                 SmartDevice selectedDevice = devices.get(choice - 1);
 
-                System.out.println("Selected device: " + selectedDevice.getName());
+                System.out.println("\nSelected device: " + selectedDevice.getName());
 
                 return selectedDevice;
             } else {

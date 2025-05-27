@@ -51,10 +51,6 @@ public class LogEvent {
         return timestamp;
     }
 
-    public String getDeviceId() {
-        return deviceId;
-    }
-
     public String getDeviceType() {
         return deviceType;
     }
@@ -65,9 +61,5 @@ public class LogEvent {
 
     public EventType getEventType() {
         return eventType;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

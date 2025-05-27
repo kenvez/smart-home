@@ -3,12 +3,15 @@ package com.smarthome.core.model.devices.impl;
 import com.smarthome.core.logging.*;
 import com.smarthome.core.model.devices.base.DeviceStatus;
 import com.smarthome.core.model.devices.base.SmartDevice;
+import com.smarthome.core.model.devices.base.Switchable;
 
 
 import java.awt.Color;
-import java.time.LocalTime;
+import java.util.Random;
 
-public class Lightbulb extends SmartDevice {
+public class Lightbulb extends SmartDevice implements Switchable {
+    private final Random random = new Random();
+
     private double hue;
     private double saturation;
     private double value;
@@ -24,39 +27,60 @@ public class Lightbulb extends SmartDevice {
         return this.hue;
     }
 
-    public void setHue(double hue) throws IllegalArgumentException{
+    public void setHue(double hue) throws IllegalArgumentException {
         if (hue < 0.0 || hue >= 360.0)
             throw new IllegalArgumentException("Hue must be in [0, 360): " + hue);
 
         this.hue = hue;
 
         notifyObservers();
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "Hue set to " + hue + "%"
+        );
     }
 
     public double getSaturation() {
         return this.saturation;
     }
 
-    public void setSaturation(double saturation) throws IllegalArgumentException{
+    public void setSaturation(double saturation) throws IllegalArgumentException {
         if (saturation < 0.0 || saturation > 1.0)
             throw new IllegalArgumentException("Saturation must be in [0, 1]: " + saturation);
 
         this.saturation = saturation;
 
         notifyObservers();
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "Saturation set to " + saturation + "%"
+        );
     }
 
     public double getValue() {
         return this.value;
     }
 
-    public void setValue(double value) throws IllegalArgumentException{
+    public void setValue(double value) throws IllegalArgumentException {
         if (value < 0.0 || value > 1.0)
             throw new IllegalArgumentException("Value must be in [0, 1]: " + value);
 
         this.value = value;
 
         notifyObservers();
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "Value set to " + value * 100 + "%"
+        );
     }
 
     public Color getRGBColor() {
@@ -106,55 +130,126 @@ public class Lightbulb extends SmartDevice {
     }
 
     @Override
-    public void simulate() {
-        if (!isOn()) {
-            return;
-        }
-
-        double randomFluctuation = (Math.random() - 0.5) * 0.02;
-        double newValue = Math.min(1.0, Math.max(0.0, getValue() + randomFluctuation));
-
-        setValue(newValue);
-
-        double hueShift = (Math.random() - 0.5) * 2.0;
-        double newHue = (getHue() + hueShift) % 360.0;
-        if (newHue < 0) {
-            newHue += 360.0;
-        }
-
-        setHue(newHue);
+    public void turnOn() {
+        setStatus(DeviceStatus.ON);
 
         EventLogger.getInstance().logDeviceEvent(
                 this,
                 getParentRoom(),
-                EventType.SIMULATION,
-                String.format("Light state - Hue: %.1f, Saturation: %.2f, Brightness: %.2f%%",
-                        getHue(),
-                        getSaturation(),
-                        getValue() * 100)
+                EventType.STATUS_CHANGE,
+                "Lightbulb turned ON"
         );
+    }
+
+    @Override
+    public void turnOff() {
+        setStatus(DeviceStatus.OFF);
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.STATUS_CHANGE,
+                "Lightbulb turned OFF"
+        );
+    }
+
+    @Override
+    public boolean isOn() {
+        return getStatus() == DeviceStatus.ON;
+    }
 
 
-        LocalTime currentTime = LocalTime.now();
-        int hour = currentTime.getHour();
+    @Override
+    public void simulate() {
+        double previousHue = hue;
+        double previousSaturation = saturation;
+        double previousValue = value;
 
+        if (!isOn()) {
+            if (random.nextBoolean()) {
+                turnOn();
 
-        if (hour >= 18 && hour < 23) {
-            if (getHue() > 45.0) {
-                setHue(Math.max(30.0, getHue() - 1.0));
-                setSaturation(Math.min(0.15, getSaturation() + 0.01));
+                System.out.println("Light bulb " + getName() + " turned ON");
+            } else {
+                System.out.println("Light bulb " + getName() + " remains OFF");
+
+                return;
             }
-        } else if (hour >= 6 && hour < 18) {
-            if (getHue() < 180.0) {
-                setHue(Math.min(200.0, getHue() + 1.0));
-                setSaturation(Math.max(0.05, getSaturation() - 0.01));
+        } else {
+            if (random.nextDouble() < 0.3) {
+                turnOff();
+                System.out.println("Light bulb " + getName() + " turned OFF");
+
+                return;
             }
         }
 
-        if (hour >= 22 || hour < 6) {
-            setValue(Math.min(0.5, getValue()));
-        } else if (hour >= 8 && hour < 18) {
-            setValue(Math.max(0.7, getValue()));
+        if (isOn()) {
+            if (random.nextBoolean()) {
+                try {
+                    double newValue = Math.round(random.nextDouble() * 100) / 100.0;
+
+                    if (Math.abs(newValue - value) > 0.01) {
+                        double oldValue = value;
+                        setValue(newValue);
+
+                        System.out.println("Light bulb " + getName() + " " +
+                                "value changed from " +
+                                String.format("%.0f", oldValue * 100) + "% to " +
+                                String.format("%.0f", newValue * 100) + "%");
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error setting light bulb value: " + e.getMessage());
+                }
+            }
+
+            if (random.nextDouble() < 0.3) {
+                try {
+                    double newHue = random.nextDouble() * 359;
+
+                    if (Math.abs(newHue - hue) > 5) {
+                        double oldHue = hue;
+                        setHue(newHue);
+
+                        System.out.println("Light bulb " + getName() + " color hue changed from " +
+                                String.format("%.1f", oldHue) + " to " +
+                                String.format("%.1f", newHue));
+
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error setting light bulb hue: " + e.getMessage());
+                }
+            }
+
+            if (random.nextDouble() < 0.2) {
+                try {
+                    double newSaturation = Math.round(random.nextDouble() * 100) / 100.0;
+
+                    if (Math.abs(newSaturation - saturation) > 0.05) {
+                        double oldSaturation = saturation;
+                        setSaturation(newSaturation);
+
+                        System.out.println("Light bulb " + getName() + " color saturation changed from " +
+                                String.format("%.2f", oldSaturation) + " to " +
+                                String.format("%.2f", newSaturation));
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Error setting light bulb saturation: " + e.getMessage());
+                }
+            }
+
+            if (previousHue != hue || previousSaturation != saturation || previousValue != value) {
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.SIMULATION,
+                        String.format(
+                                "Simulated color change: HSV(%.1f, %.2f, %.2f) -> HSV(%.1f, %.2f, %.2f)",
+                                previousHue, previousSaturation, previousValue,
+                                hue, saturation, value
+                        )
+                );
+            }
         }
     }
 }

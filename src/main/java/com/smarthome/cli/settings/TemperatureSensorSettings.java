@@ -1,9 +1,6 @@
 package com.smarthome.cli.settings;
 
-import com.smarthome.cli.utils.MenuUtils;
 import com.smarthome.cli.utils.ScreenUtils;
-import com.smarthome.cli.utils.SelectionResult;
-import com.smarthome.core.model.devices.base.SmartDevice;
 import com.smarthome.core.model.devices.impl.TemperatureSensor;
 
 import java.util.Scanner;

@@ -79,7 +79,7 @@ public class DeviceMenu {
             return;
         }
 
-        Room selectedRoom = selection.getRoom();
+        Room selectedRoom = selection.room();
 
         ScreenUtils.clearScreen();
 
@@ -238,7 +238,7 @@ public class DeviceMenu {
             return;
         }
 
-        Room selectedRoom = selection.getRoom();
+        Room selectedRoom = selection.room();
 
         ScreenUtils.clearScreen();
 
@@ -283,7 +283,7 @@ public class DeviceMenu {
             return;
         }
 
-        Room selectedRoom = selection.getRoom();
+        Room selectedRoom = selection.room();
 
         ScreenUtils.clearScreen();
 

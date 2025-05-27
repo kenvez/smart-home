@@ -2,6 +2,8 @@ package com.smarthome.cli.menu;
 
 import com.smarthome.cli.utils.*;
 import com.smarthome.core.Main;
+import com.smarthome.core.logging.EventLogger;
+import com.smarthome.core.logging.EventType;
 import com.smarthome.core.model.devices.base.*;
 import com.smarthome.core.model.house.House;
 import com.smarthome.core.model.room.Room;
@@ -80,7 +82,7 @@ public class RuleMenu {
             return;
         }
 
-        SmartDevice conditionDevice = conditionSelection.getDevice();
+        SmartDevice conditionDevice = conditionSelection.device();
 
         Predicate<SmartDevice> condition = createConditionForDevice(conditionDevice);
 
@@ -93,7 +95,7 @@ public class RuleMenu {
             return;
         }
 
-        SmartDevice actionDevice = actionSelection.getDevice();
+        SmartDevice actionDevice = actionSelection.device();
 
         Consumer<SmartDevice> action = createActionForDevice(actionDevice);
 
@@ -112,8 +114,16 @@ public class RuleMenu {
 
         conditionDevice.getRules().add(rule);
 
-        System.out.println("\nRule created successfully: " + rule);
+        EventLogger.getInstance().logRuleEvent(
+                rule.toString(),
+                "CONDITIONAL",
+                conditionDevice.getParentRoom().getName(),
+                EventType.RULE_ADDED,
+                "Created rule: " + (description.isEmpty() ? rule.toString() :
+                        description)
+        );
 
+        System.out.println("\nRule created successfully: " + rule);
     }
 
     private void removeRule() {
@@ -130,7 +140,7 @@ public class RuleMenu {
             return;
         }
 
-        SmartDevice selectedDevice = selection.getDevice();
+        SmartDevice selectedDevice = selection.device();
         Set<Rule<?, ?>> rules = selectedDevice.getRules();
 
         if (rules.isEmpty()) {
@@ -167,6 +177,14 @@ public class RuleMenu {
         Rule<?, ?> ruleToRemove = rulesList.get(choice - 1);
 
         rules.remove(ruleToRemove);
+
+        EventLogger.getInstance().logRuleEvent(
+                ruleToRemove.toString(),
+                "CONDITIONAL",
+                selectedDevice.getParentRoom().getName(),
+                EventType.RULE_REMOVED,
+                "Removed rule: " + ruleToRemove
+        );
 
         System.out.println("\nRule removed successfully.");
     }

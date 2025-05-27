@@ -16,6 +16,7 @@ public class DeviceSettings {
     private final CoffeeMachineSettings coffeeMachineSettings;
     private final CurtainSettings curtainSettings;
     private final DoorLockSettings doorLockSettings;
+    private final TemperatureSensorSettings temperatureSensorSettings;
 
     public DeviceSettings(Scanner scanner) {
         this.scanner = scanner;
@@ -24,6 +25,7 @@ public class DeviceSettings {
         this.coffeeMachineSettings = new CoffeeMachineSettings(scanner, this);
         this.curtainSettings = new CurtainSettings(scanner, this);
         this.doorLockSettings = new DoorLockSettings(scanner, this);
+        this.temperatureSensorSettings = new TemperatureSensorSettings(scanner, this);
     }
 
     public void start() {
@@ -33,7 +35,7 @@ public class DeviceSettings {
             return;
         }
 
-        SmartDevice selectedDevice = selection.getDevice();
+        SmartDevice selectedDevice = selection.device();
 
         switch (selectedDevice) {
             case Lightbulb lightbulb -> lightbulbSettings.start(lightbulb);
@@ -41,6 +43,7 @@ public class DeviceSettings {
             case CoffeeMachine coffeeMachine -> coffeeMachineSettings.start(coffeeMachine);
             case Curtain curtain -> curtainSettings.start(curtain);
             case DoorLock doorLock -> doorLockSettings.start(doorLock);
+            case TemperatureSensor temperatureSensor -> temperatureSensorSettings.start(temperatureSensor);
             default -> System.out.println("Invalid device type!");
 
         }
@@ -68,10 +71,10 @@ public class DeviceSettings {
 
         if (device.isOn()) {
             device.turnOff();
-            System.out.println("\nDevice turned off!");
+            System.out.println("\nDevice turned OFF!");
         } else {
             device.turnOn();
-            System.out.println("\nDevice turned on!");
+            System.out.println("\nDevice turned ON!");
         }
     }
 }

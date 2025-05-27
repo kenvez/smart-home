@@ -3,7 +3,11 @@ package com.smarthome.core.model.devices.impl;
 import com.smarthome.core.logging.*;
 import com.smarthome.core.model.devices.base.*;
 
+import java.util.Random;
+
 public class CoffeeMachine extends SmartDevice {
+    private final Random random = new Random();
+
     private CoffeeType coffeeType;
     private CupSize cupSize;
     private int waterLevel;
@@ -58,7 +62,15 @@ public class CoffeeMachine extends SmartDevice {
             throw new IllegalArgumentException("Water level must be between 0 and 100");
         }
         this.waterLevel = waterLevel;
+
         notifyObservers();
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "Water level set to " + waterLevel + "%"
+        );
     }
 
     public boolean isBrewing() {
@@ -99,6 +111,7 @@ public class CoffeeMachine extends SmartDevice {
         isBrewing = true;
 
         int waterUsed = 0;
+
         switch (cupSize) {
             case SMALL -> waterUsed = 10;
             case MEDIUM -> waterUsed = 20;
@@ -115,19 +128,6 @@ public class CoffeeMachine extends SmartDevice {
         );
     }
 
-    public void finishBrewing() {
-        if (isBrewing) {
-            isBrewing = false;
-
-            EventLogger.getInstance().logDeviceEvent(
-                    this,
-                    getParentRoom(),
-                    EventType.STATUS_CHANGE,
-                    coffeeType + " is ready!"
-            );
-        }
-    }
-
     public void refill() {
         setWaterLevel(100);
 
@@ -142,23 +142,148 @@ public class CoffeeMachine extends SmartDevice {
     @Override
     public void simulate() {
         if (!isOn()) {
-            return;
+            turnOn();
+
+            System.out.println("Coffee machine " + getName() + " turned ON for simulation");
         }
 
-        if (isBrewing && Math.random() > 0.5) {
-            finishBrewing();
+        int previousWaterLevel = waterLevel;
+        CoffeeType previousCoffeeType = coffeeType;
+        CupSize previousCupSize = cupSize;
+
+        if (random.nextDouble() < 0.3) {
+            CoffeeType[] types = CoffeeType.values();
+            CoffeeType newType = types[random.nextInt(types.length)];
+
+            if (newType != coffeeType) {
+                coffeeType = newType;
+                System.out.println("Coffee machine " + getName() + " coffee type changed from " +
+                        previousCoffeeType + " to " + coffeeType);
+
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.SIMULATION,
+                        "Simulated coffee type change: " + previousCoffeeType + " -> " + coffeeType
+                );
+            }
         }
 
-        if (Math.random() < 0.1) {
-            setWaterLevel(Math.max(0, waterLevel - 1));
+        if (random.nextDouble() < 0.3) {
+            CupSize[] sizes = CupSize.values();
+            CupSize newSize = sizes[random.nextInt(sizes.length)];
+
+            if (newSize != cupSize) {
+                cupSize = newSize;
+                System.out.println("Coffee machine " + getName() + " cup size changed from " +
+                        previousCupSize + " to " + cupSize);
+
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.SIMULATION,
+                        "Simulated cup size change: " + previousCupSize + " -> " + cupSize
+                );
+            }
         }
 
-        EventLogger.getInstance().logDeviceEvent(
-                this,
-                getParentRoom(),
-                EventType.SIMULATION,
-                String.format("Coffee Machine - Water: %d%%, Status: %s",
-                        waterLevel, isBrewing ? "Brewing" : "Ready")
-        );
+        if (!isBrewing && random.nextDouble() < 0.4) {
+            if (waterLevel >= 20) {
+                int waterUsed = 0;
+
+                switch (cupSize) {
+                    case SMALL -> waterUsed = 10;
+                    case MEDIUM -> waterUsed = 20;
+                    case LARGE -> waterUsed = 30;
+                }
+
+                int newWaterLevel = Math.max(0, waterLevel - waterUsed);
+
+                if (newWaterLevel != waterLevel) {
+                    waterLevel = newWaterLevel;
+                    isBrewing = true;
+
+                    System.out.println("Coffee machine " + getName() + " started brewing " +
+                            coffeeType + " (" + cupSize + ")");
+                    System.out.println("Water level decreased from " + previousWaterLevel +
+                            "% to " + waterLevel + "%");
+
+                    EventLogger.getInstance().logDeviceEvent(
+                            this,
+                            getParentRoom(),
+                            EventType.SIMULATION,
+                            "Simulated brewing: " + coffeeType + " (" + cupSize + "), water level: " +
+                                    previousWaterLevel + "% -> " + waterLevel + "%"
+                    );
+                }
+            } else {
+                System.out.println("Coffee machine " + getName() + " cannot brew: Not enough water");
+
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.SIMULATION,
+                        "Simulated brewing attempt failed: Not enough water (level: " + waterLevel + "%)"
+                );
+            }
+        }
+        else if (isBrewing && random.nextDouble() < 0.7) {
+            isBrewing = false;
+            System.out.println("Coffee machine " + getName() + " finished brewing");
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.SIMULATION,
+                    "Simulated brewing finished: " + coffeeType + " (" + cupSize + ")"
+            );
+        }
+
+        if (waterLevel < 50 && random.nextDouble() < 0.2) {
+            int oldLevel = waterLevel;
+            waterLevel = 100;
+
+            System.out.println("Coffee machine " + getName() + " water refilled from " +
+                    oldLevel + "% to 100%");
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.SIMULATION,
+                    "Simulated water refill: " + oldLevel + "% -> 100%"
+            );
+        }
+
+        if (waterLevel > 0 && random.nextDouble() < 0.1) {
+            int waterLoss = random.nextInt(5) + 1;
+            int newLevel = Math.max(0, waterLevel - waterLoss);
+
+            if (newLevel != waterLevel) {
+                int oldLevel = waterLevel;
+                waterLevel = newLevel;
+
+                System.out.println("Coffee machine " + getName() + " water level decreased from " +
+                        oldLevel + "% to " + waterLevel + "% due to evaporation");
+
+                EventLogger.getInstance().logDeviceEvent(
+                        this,
+                        getParentRoom(),
+                        EventType.SIMULATION,
+                        "Simulated water evaporation: " + oldLevel + "% -> " + waterLevel + "%"
+                );
+            }
+        }
+
+        if (random.nextDouble() < 0.2) {
+            if (isOn()) {
+                turnOff();
+
+                System.out.println("Coffee machine " + getName() + " turned OFF");
+            } else {
+                turnOn();
+
+                System.out.println("Coffee machine " + getName() + " turned ON");
+            }
+        }
     }
 }

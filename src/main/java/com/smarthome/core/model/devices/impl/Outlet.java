@@ -3,7 +3,13 @@ package com.smarthome.core.model.devices.impl;
 import com.smarthome.core.logging.*;
 import com.smarthome.core.model.devices.base.*;
 
-public class Outlet extends SmartDevice {
+import java.util.Random;
+
+public class Outlet extends SmartDevice implements Switchable {
+    private final Random random = new Random();
+
+    private double powerConsumption;
+    private boolean devicePluggedIn;
     private boolean inUse;
 
     public Outlet(String name, DeviceStatus status) {
@@ -14,6 +20,13 @@ public class Outlet extends SmartDevice {
             setStatus(DeviceStatus.OFF);
 
             notifyObservers();
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.STATUS_CHANGE,
+                    "Outlet turned OFF"
+            );
         }
     }
 
@@ -29,92 +42,126 @@ public class Outlet extends SmartDevice {
         if (!inUse && isOn()) {
             turnOff();
         }
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.SETTINGS_CHANGE,
+                "In use changed to " + (inUse ? "ON" : "OFF")
+        );
     }
 
     @Override
     public void turnOn() {
         if (inUse) {
             super.turnOn();
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.STATUS_CHANGE,
+                    "Outlet turned ON"
+            );
         } else {
-            System.out.println("Cannot turn on the outlet, because it is not in use.");
+            System.out.println("\nCannot turn on the outlet, because it is " +
+                    "not in use.");
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.WARNING,
+                    "Failed to turn on outlet, not in use"
+            );
         }
     }
 
+
+    @Override
+    public void turnOff() {
+        super.turnOff();
+
+        EventLogger.getInstance().logDeviceEvent(
+                this,
+                getParentRoom(),
+                EventType.STATUS_CHANGE,
+                "Outlet turned OFF"
+        );
+    }
+
+    @Override
+    public boolean isOn() {
+        return getStatus() == DeviceStatus.ON;
+    }
+
+
     @Override
     public void simulate() {
-        final double MAX_POWER = 1500.0;
-        final double MIN_POWER = 5.0;
-        double currentPowerDraw = 0.0;
+        double previousPower = powerConsumption;
 
         if (!isInUse()) {
-            if (Math.random() < 0.05) {
-                setInUse(true);
-                EventLogger.getInstance().logDeviceEvent(
-                        this,
-                        getParentRoom(),
-                        EventType.STATUS_CHANGE,
-                        "Device plugged into outlet"
-                );
-            }
-            return;
+            setInUse(true);
+
+            System.out.println("Outlet " + getName() + " set to in-use for simulation");
         }
 
-        if (isOn()) {
-            double previousPower = currentPowerDraw;
+        if (!isOn()) {
+            turnOn();
 
-            currentPowerDraw = MIN_POWER + (Math.random() * 200);
+            System.out.println("Outlet " + getName() + " turned ON for simulation");
+        }
 
-            if (Math.abs(currentPowerDraw - previousPower) > 50) {
-                EventLogger.getInstance().logDeviceEvent(
-                        this,
-                        getParentRoom(),
-                        EventType.SIMULATION,
-                        String.format("Power draw changed: %.1fW → %.1fW",
-                                previousPower, currentPowerDraw)
-                );
-            }
-
-            if (currentPowerDraw >= MAX_POWER * 0.95) {
-                EventLogger.getInstance().logDeviceEvent(
-                        this,
-                        getParentRoom(),
-                        EventType.WARNING,
-                        String.format("High power draw warning: %.1fW", currentPowerDraw)
-                );
-
-                if (Math.random() < 0.1) {
-                    turnOff();
-                    setInUse(false);
-
-                    EventLogger.getInstance().logDeviceEvent(
-                            this,
-                            getParentRoom(),
-                            EventType.ERROR,
-                            "Overload protection triggered - outlet disabled"
-                    );
-                    return;
-                }
-            }
-
-            if (Math.random() < 0.02) {
-                setInUse(false);
-
-                EventLogger.getInstance().logDeviceEvent(
-                        this,
-                        getParentRoom(),
-                        EventType.STATUS_CHANGE,
-                        "Device unplugged from outlet"
-                );
-            }
-        } else if (isInUse()) {
-            currentPowerDraw = MIN_POWER;
+        if (random.nextDouble() < 0.2) {
+            devicePluggedIn = !devicePluggedIn;
+            System.out.println("Outlet " + getName() + " device plugged in: " + (devicePluggedIn ? "YES" : "NO"));
 
             EventLogger.getInstance().logDeviceEvent(
                     this,
                     getParentRoom(),
                     EventType.SIMULATION,
-                    String.format("Standby power consumption: %.1fW", currentPowerDraw)
+                    "Simulated device " + (devicePluggedIn ? "plugged in" : "unplugged")
             );
+        }
+
+        if (isOn() && devicePluggedIn) {
+            double newPowerConsumption = random.nextDouble() * 1500;
+            newPowerConsumption = Math.round(newPowerConsumption * 10) / 10.0; // Round to 1 decimal
+
+            powerConsumption = newPowerConsumption;
+
+            System.out.println("Outlet " + getName() + " power consumption changed from " +
+                    previousPower + " watts to " + powerConsumption + " watts");
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.SIMULATION,
+                    "Simulated power consumption: " + previousPower + " watts -> " + powerConsumption + " watts"
+            );
+        } else if (previousPower > 0) {
+            powerConsumption = 0;
+
+            System.out.println("Outlet " + getName() + " power consumption changed from " +
+                    previousPower + " watts to 0 watts");
+
+            EventLogger.getInstance().logDeviceEvent(
+                    this,
+                    getParentRoom(),
+                    EventType.SIMULATION,
+                    "Simulated power consumption: " + previousPower + " watts -> 0 watts (device " +
+                            (!isOn() ? "turned off" : "unplugged") + ")"
+            );
+        }
+
+        if (random.nextDouble() < 0.4) {
+            boolean currentState = isOn();
+
+            if (currentState) {
+                turnOff();
+            } else {
+                turnOn();
+            }
+
+            System.out.println("Outlet " + getName() + " power state changed to: " + (isOn() ? "ON" : "OFF"));
         }
     }
 }
