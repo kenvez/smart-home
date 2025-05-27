@@ -13,7 +13,6 @@ public class Rule<T extends SmartDevice, U extends SmartDevice> {
     private final Consumer<U> action;
     private final String description;
 
-
     public Rule(T conditionDevice, Predicate<T> condition, U actionDevice,
                 Consumer<U> action, String description) {
         this.conditionDevice = conditionDevice;
